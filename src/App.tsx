@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
 import ScrollToTop from "@/components/ScrollToTop";
+import About from "./pages/About"; // Import the About component
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/register-brand" element={<RegisterBrand />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<About />} /> {/* Add the About route */}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

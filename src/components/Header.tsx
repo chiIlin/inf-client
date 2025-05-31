@@ -25,9 +25,9 @@ const Header = () => {
             <Link to="/how-it-works" className="text-gray-700 hover:text-ua-pink transition-colors">
               Як це працює
             </Link>
-            <Link to="/pricing" className="text-gray-700 hover:text-ua-pink transition-colors">
+            {/* <Link to="/pricing" className="text-gray-700 hover:text-ua-pink transition-colors">
               Тарифи
-            </Link>
+            </Link> */}
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -70,9 +70,9 @@ const Header = () => {
               <Link to="/how-it-works" className="text-gray-700 hover:text-ua-pink transition-colors py-2">
                 Як це працює
               </Link>
-              <Link to="/pricing" className="text-gray-700 hover:text-ua-pink transition-colors py-2">
+              {/* <Link to="/pricing" className="text-gray-700 hover:text-ua-pink transition-colors py-2">
                 Тарифи
-              </Link>
+              </Link> */}
               <div className="flex flex-col space-y-2 pt-3 border-t border-ua-pink-light">
                 <Link to="/login">
                   <Button variant="ghost" className="w-full text-ua-blue hover:text-ua-pink">
