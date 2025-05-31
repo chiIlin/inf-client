@@ -129,7 +129,7 @@ const RegisterInfluencer = () => {
                   <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                     <SelectValue placeholder="Оберіть основні категорії" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-ua-blue-light">
+                  <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>{category}</SelectItem>
                     ))}

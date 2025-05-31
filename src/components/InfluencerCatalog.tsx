@@ -129,7 +129,7 @@ const InfluencerCatalog = () => {
               <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                 <SelectValue placeholder="Категорія" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-ua-blue-light">
+              <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                 {categories.map(category => (
                   <SelectItem key={category} value={category}>{category}</SelectItem>
                 ))}
@@ -140,7 +140,7 @@ const InfluencerCatalog = () => {
               <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                 <SelectValue placeholder="Місто" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-ua-blue-light">
+              <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                 {cities.map(city => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
                 ))}

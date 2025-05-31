@@ -115,7 +115,7 @@ const RegisterBrand = () => {
                     <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                       <SelectValue placeholder="Оберіть галузь" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-ua-blue-light">
+                    <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                       {industries.map(industry => (
                         <SelectItem key={industry} value={industry}>{industry}</SelectItem>
                       ))}
@@ -130,7 +130,7 @@ const RegisterBrand = () => {
                   <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                     <SelectValue placeholder="Оберіть розмір компанії" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-ua-blue-light">
+                  <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                     {companySizes.map(size => (
                       <SelectItem key={size} value={size}>{size}</SelectItem>
                     ))}
@@ -163,7 +163,7 @@ const RegisterBrand = () => {
                     <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                       <SelectValue placeholder="Оберіть бюджет" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-ua-blue-light">
+                    <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                       <SelectItem value="under-10k">До 10,000 грн</SelectItem>
                       <SelectItem value="10k-25k">10,000 - 25,000 грн</SelectItem>
                       <SelectItem value="25k-50k">25,000 - 50,000 грн</SelectItem>
