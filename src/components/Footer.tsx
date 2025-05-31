@@ -47,11 +47,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="hover:text-white transition-colors">
-                  Тарифи
-                </Link>
-              </li>
-              <li>
                 <Link to="/about" className="hover:text-white transition-colors">
                   Про нас
                 </Link>
