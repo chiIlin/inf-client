@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Input, Label, Separator } from '@/components/ui/base-ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogIn, Users, Building2 } from 'lucide-react';
@@ -10,20 +10,26 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(""); // Додаємо стан для успіху
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess(""); // Скидаємо попереднє повідомлення
+    setSuccess("");
     try {
       const response = await axios.post("http://localhost:5112/api/auth/login", {
         email,
         password,
       });
-      localStorage.setItem("token", response.data.Token);
-      localStorage.setItem("role", response.data.Role); // <-- Додай це (Role має повертати бекенд)
-      setSuccess("Вхід успішний!"); // Повідомлення про успіх
-      // Можна додати редірект тут, якщо потрібно
+      console.log("Role from backend:", response.data.role); // змінили на .role
+      localStorage.setItem("token", response.data.token);     // змінили на .token
+      localStorage.setItem("role", response.data.role);       // змінили на .role
+      setSuccess("Вхід успішний!");
+      if (response.data.role === "company") {
+        navigate("/brand-profile");
+      } else if (response.data.role === "influencer") {
+        navigate("/influencer-profile");
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || "Помилка входу");
     }

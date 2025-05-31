@@ -61,7 +61,7 @@ const Header = () => {
                 >
                   Вийти
                 </button>
-                <Link to={role === "brand" ? "/brand-profile" : "/influencer-profile"}>
+                <Link to={role === "company" ? "/brand-profile" : "/influencer-profile"}>
                   <button className="bg-ua-pink text-white px-4 py-2 rounded hover:bg-ua-pink-soft transition">
                     Профіль
                   </button>
@@ -127,7 +127,7 @@ const Header = () => {
                     >
                       Вийти
                     </button>
-                    <Link to={role === "brand" ? "/brand-profile" : "/influencer-profile"}>
+                    <Link to={role === "company" ? "/brand-profile" : "/influencer-profile"}>
                       <button className="bg-ua-pink text-white px-4 py-2 rounded hover:bg-ua-pink-soft transition">
                         Профіль
                       </button>
