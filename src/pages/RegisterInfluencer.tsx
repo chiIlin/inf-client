@@ -129,12 +129,16 @@ const RegisterInfluencer = () => {
                   <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                     <SelectValue placeholder="Оберіть основні категорії" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-ua-blue-light">
+                  <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>{category}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {/* Додаємо контейнер для бейджів, якщо потрібно показувати вибрані категорії */}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {/* Тут можуть бути бейджі вибраних категорій */}
+                </div>
               </div>
 
               <div className="space-y-4">

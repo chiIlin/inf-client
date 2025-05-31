@@ -27,7 +27,7 @@ const mockInfluencers = [
   {
     id: 2,
     name: 'Максим Петренко',
-    bio: 'Travel блогер. Показую красу України та світу.',
+    bio: 'Travel блогер. Показую красу України та світу. він чіловий чел',
     city: 'Львів',
     followers: 18500,
     engagement: '5.8%',
@@ -129,7 +129,7 @@ const InfluencerCatalog = () => {
               <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                 <SelectValue placeholder="Категорія" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-ua-blue-light">
+              <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                 {categories.map(category => (
                   <SelectItem key={category} value={category}>{category}</SelectItem>
                 ))}
@@ -140,7 +140,7 @@ const InfluencerCatalog = () => {
               <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                 <SelectValue placeholder="Місто" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-ua-blue-light">
+              <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                 {cities.map(city => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
                 ))}
@@ -162,7 +162,7 @@ const InfluencerCatalog = () => {
           {filteredInfluencers.map(influencer => (
             <Card key={influencer.id} className="card-hover bg-white/80 backdrop-blur-sm border-ua-pink-light">
               <CardHeader className="text-center">
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden border-4 border-gradient-to-r from-ua-pink to-ua-blue">
+                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden border-4 border-gradient-to-r from-ua-pink to-ua-blue transition-none">
                   <img 
                     src={influencer.avatar} 
                     alt={influencer.name}
