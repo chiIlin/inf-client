@@ -135,6 +135,10 @@ const RegisterInfluencer = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                {/* Додаємо контейнер для бейджів, якщо потрібно показувати вибрані категорії */}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {/* Тут можуть бути бейджі вибраних категорій */}
+                </div>
               </div>
 
               <div className="space-y-4">

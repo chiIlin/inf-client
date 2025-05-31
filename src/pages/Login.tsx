@@ -90,7 +90,7 @@ const Login = () => {
                   </Button>
                 </Link>
                 
-                <Link to="/register-brand">
+                <Link to="/register-brand" className="mt-[5px] block">
                   <Button 
                     variant="outline" 
                     className="w-full border-ua-blue text-ua-blue hover:bg-ua-blue hover:text-white"

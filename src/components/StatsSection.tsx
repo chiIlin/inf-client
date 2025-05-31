@@ -1,4 +1,3 @@
-
 import { Users, Building2, Star, TrendingUp } from 'lucide-react';
 
 const StatsSection = () => {
@@ -67,6 +66,13 @@ const StatsSection = () => {
               <p className="text-gray-600 text-sm">
                 {stat.description}
               </p>
+
+              {/* Якщо тут є бейджі, додай контейнер */}
+              {/* <div className="flex flex-wrap gap-2 justify-center mt-2">
+                {stat.badges?.map(badge => (
+                  <Badge key={badge}>{badge}</Badge>
+                ))}
+              </div> */}
             </div>
           ))}
         </div>
