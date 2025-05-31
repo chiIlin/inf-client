@@ -2,7 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import Index from "./pages/Index";
 import Catalog from "./pages/Catalog";
 import RegisterInfluencer from "./pages/RegisterInfluencer";
@@ -12,6 +14,8 @@ import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
 import ScrollToTop from "@/components/ScrollToTop";
 import About from "./pages/About"; // Import the About component
+import InfluencerProfile from "@/pages/InfluencerProfile";
+import BrandProfile from "@/pages/BrandProfile";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +24,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <Router>
+        <Header />
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
@@ -30,10 +35,13 @@ const App = () => (
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} /> {/* Add the About route */}
+          <Route path="/influencer-profile" element={<InfluencerProfile />} />
+          <Route path="/brand-profile" element={<BrandProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+        <Footer />
+      </Router>
     </TooltipProvider>
   </QueryClientProvider>
 );

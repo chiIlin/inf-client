@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import {
   Button,
   Input,
@@ -72,7 +70,6 @@ const RegisterInfluencer = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
       
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-2xl">
@@ -265,7 +262,6 @@ const RegisterInfluencer = () => {
         </div>
       </section>
       
-      <Footer />
     </div>
   );
 };

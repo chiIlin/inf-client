@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import {
   Button,
   Input,
@@ -72,7 +70,6 @@ const RegisterBrand = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-2xl">
           <div className="text-center mb-12">
@@ -241,7 +238,6 @@ const RegisterBrand = () => {
           </Card>
         </div>
       </section>
-      <Footer />
     </div>
   );
 };

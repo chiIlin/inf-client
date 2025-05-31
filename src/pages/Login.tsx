@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { Button, Input, Label, Separator } from '@/components/ui/base-ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogIn, Users, Building2 } from 'lucide-react';
@@ -23,6 +21,7 @@ const Login = () => {
         password,
       });
       localStorage.setItem("token", response.data.Token);
+      localStorage.setItem("role", response.data.Role); // <-- Додай це (Role має повертати бекенд)
       setSuccess("Вхід успішний!"); // Повідомлення про успіх
       // Можна додати редірект тут, якщо потрібно
     } catch (err: any) {
@@ -32,7 +31,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
       
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-md">
@@ -139,7 +137,6 @@ const Login = () => {
         </div>
       </section>
       
-      <Footer />
     </div>
   );
 };

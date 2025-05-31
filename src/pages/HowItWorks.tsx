@@ -1,11 +1,8 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { Users, Building2, Search } from 'lucide-react';
 
 const HowItWorks = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
 
       <section className="flex-1 py-16 px-4">
         <div className="container mx-auto max-w-3xl">
@@ -69,7 +66,6 @@ const HowItWorks = () => {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 };
