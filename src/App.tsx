@@ -10,6 +10,7 @@ import RegisterBrand from "./pages/RegisterBrand";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/catalog" element={<Catalog />} />
