@@ -20,13 +20,13 @@ const Footer = () => {
               автентичного та ефективного контенту.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
+              <a href="https://www.instagram.com/sodd7m/" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
+              <a href="https://www.facebook.com/DwayneJohnson/" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
+              <a href="https://www.linkedin.com/in/%D0%B4%D0%BC%D0%B8%D1%82%D1%80%D0%BE-%D0%B4%D0%B8%D1%88%D0%BB%D0%B5%D0%B2%D0%B5%D0%BD%D0%BA%D0%BE-72143a26a/" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>
@@ -65,15 +65,15 @@ const Footer = () => {
             <ul className="space-y-3 text-ua-blue-light">
               <li className="flex items-center">
                 <Mail className="h-4 w-4 mr-2" />
-                hello@uainfluencer.com
+                dmytrofeedback@gmail.com
               </li>
               <li className="flex items-center">
                 <Phone className="h-4 w-4 mr-2" />
-                +380 (50) 123-45-67
+                +380 (93) 230-19-86
               </li>
               <li className="flex items-center">
                 <MapPin className="h-4 w-4 mr-2" />
-                Київ, Україна
+                Львів, Україна
               </li>
             </ul>
           </div>
