@@ -160,14 +160,16 @@ const InfluencerCatalog = () => {
         {/* Results */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredInfluencers.map(influencer => (
-            <Card key={influencer.id} className="card-hover bg-white/80 backdrop-blur-sm border-ua-pink-light">
+            <Card key={influencer.id} className="bg-white/80 backdrop-blur-sm border-ua-pink-light transition-all duration-300 hover:shadow-lg hover:-translate-y-1 will-change-transform">
               <CardHeader className="text-center">
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden border-4 border-gradient-to-r from-ua-pink to-ua-blue transition-none">
-                  <img 
-                    src={influencer.avatar} 
-                    alt={influencer.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden bg-gradient-to-r from-ua-pink to-ua-blue p-0.5">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-white">
+                    <img 
+                      src={influencer.avatar} 
+                      alt={influencer.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
                 <CardTitle className="text-xl font-semibold">{influencer.name}</CardTitle>
                 <CardDescription className="text-gray-600">{influencer.bio}</CardDescription>
@@ -175,23 +177,23 @@ const InfluencerCatalog = () => {
               
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center text-gray-500">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {influencer.city}
+                  <div className="flex items-center text-gray-500 min-w-0">
+                    <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{influencer.city}</span>
                   </div>
-                  <div className="flex items-center text-gray-500">
-                    <Instagram className="h-4 w-4 mr-1" />
-                    {influencer.instagram}
+                  <div className="flex items-center text-gray-500 min-w-0">
+                    <Instagram className="h-4 w-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{influencer.instagram}</span>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm">
-                    <Users className="h-4 w-4 mr-1 text-ua-blue" />
+                    <Users className="h-4 w-4 mr-1 text-ua-blue flex-shrink-0" />
                     <span className="font-semibold">{influencer.followers.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center text-sm">
-                    <Eye className="h-4 w-4 mr-1 text-ua-pink" />
+                    <Eye className="h-4 w-4 mr-1 text-ua-pink flex-shrink-0" />
                     <span className="font-semibold">{influencer.engagement}</span>
                   </div>
                 </div>
