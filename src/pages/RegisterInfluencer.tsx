@@ -16,7 +16,7 @@ import {
   Separator
 } from '@/components/ui/base-ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Instagram, Youtube, Camera } from 'lucide-react';
+import { Users, Instagram, Youtube, Camera, MessageCircle } from 'lucide-react';
 
 const RegisterInfluencer = () => {
   const [formData, setFormData] = useState({
@@ -29,8 +29,7 @@ const RegisterInfluencer = () => {
     instagram: '',
     youtube: '',
     tiktok: '',
-    followers: '',
-    engagement: ''
+    telegram: ''
   });
 
   const categories = [
@@ -171,21 +170,26 @@ const RegisterInfluencer = () => {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="followers">Кількість підписників *</Label>
-                    <Input 
-                      id="followers"
-                      type="number"
-                      placeholder="25000"
-                      className="border-ua-blue-light focus:border-ua-pink"
-                    />
+                    <Label htmlFor="tiktok">TikTok</Label>
+                    <div className="relative">
+                      <Camera className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        id="tiktok"
+                        placeholder="@your_tiktok"
+                        className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <Label htmlFor="engagement">Середній engagement (%)</Label>
-                    <Input 
-                      id="engagement"
-                      placeholder="4.2"
-                      className="border-ua-blue-light focus:border-ua-pink"
-                    />
+                    <Label htmlFor="telegram">Telegram канал</Label>
+                    <div className="relative">
+                      <MessageCircle className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        id="telegram"
+                        placeholder="@your_telegram"
+                        className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

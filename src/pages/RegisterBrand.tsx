@@ -148,38 +148,19 @@ const RegisterBrand = () => {
               </div>
 
               <div>
-                <Label htmlFor="goals">Цілі співпраці з інфлюенсерами</Label>
-                <Textarea 
-                  id="goals"
-                  placeholder="Які результати ви очікуєте від співпраці? Які типи контенту вас цікавлять?"
-                  className="border-ua-blue-light focus:border-ua-pink min-h-[80px]"
-                />
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="budget">Орієнтовний бюджет (місячний)</Label>
-                  <Select>
-                    <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
-                      <SelectValue placeholder="Оберіть бюджет" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
-                      <SelectItem value="under-10k">До 10,000 грн</SelectItem>
-                      <SelectItem value="10k-25k">10,000 - 25,000 грн</SelectItem>
-                      <SelectItem value="25k-50k">25,000 - 50,000 грн</SelectItem>
-                      <SelectItem value="50k-100k">50,000 - 100,000 грн</SelectItem>
-                      <SelectItem value="over-100k">Понад 100,000 грн</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="target-audience">Цільова аудиторія</Label>
-                  <Input 
-                    id="target-audience"
-                    placeholder="18-35, жінки, Київ"
-                    className="border-ua-blue-light focus:border-ua-pink"
-                  />
-                </div>
+                <Label htmlFor="budget">Орієнтовний бюджет (місячний)</Label>
+                <Select>
+                  <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
+                    <SelectValue placeholder="Оберіть бюджет" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
+                    <SelectItem value="under-10k">До 10,000 грн</SelectItem>
+                    <SelectItem value="10k-25k">10,000 - 25,000 грн</SelectItem>
+                    <SelectItem value="25k-50k">25,000 - 50,000 грн</SelectItem>
+                    <SelectItem value="50k-100k">50,000 - 100,000 грн</SelectItem>
+                    <SelectItem value="over-100k">Понад 100,000 грн</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="pt-6">
