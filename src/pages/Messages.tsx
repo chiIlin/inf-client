@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Button,
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, ArrowLeft, Search, MoreVertical } from 'lucide-react';
+import axios from 'axios';
 
 interface Message {
   id: string;
@@ -41,83 +42,99 @@ const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [messages, setMessages] = useState<Record<string, Message[]>>({});
+  const [loadingChats, setLoadingChats] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
 
-  // Mock data для чатів
-  const chats: Chat[] = [
-    {
-      id: '1',
-      participantName: 'Анна Коваленко',
-      participantType: 'influencer',
-      lastMessage: 'Дякую за пропозицію! Коли можемо обговорити деталі?',
-      lastMessageTime: new Date(2024, 0, 15, 14, 30),
-      unreadCount: 2,
-      isOnline: true,
-    },
-    {
-      id: '2',
-      participantName: 'EcoLife Ukraine',
-      participantType: 'brand',
-      lastMessage: 'Ми готові обговорити умови співпраці',
-      lastMessageTime: new Date(2024, 0, 15, 12, 15),
-      unreadCount: 0,
-      isOnline: false,
-    },
-    {
-      id: '3',
-      participantName: 'Марія Петренко',
-      participantType: 'influencer',
-      lastMessage: 'Привіт! Мене цікавить ваша пропозиція',
-      lastMessageTime: new Date(2024, 0, 14, 18, 45),
-      unreadCount: 1,
-      isOnline: true,
-    },
-  ];
+  // Завантаження чатів при монтуванні
+  useEffect(() => {
+    const fetchChats = async () => {
+      setLoadingChats(true);
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:5112/api/messages/chats', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('Чати з бекенду:', res.data);
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentUserId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        // Для кожного чату визначаємо співрозмовника
+        const mapped = res.data.map((chat: any) => {
+          const otherId = chat.participants.find((id: string) => id !== currentUserId);
+          return {
+            ...chat,
+            id: chat.id || chat._id,
+            participantName: 'Співрозмовник',
+            participantAvatar: '',
+            participantType: 'influencer',
+            unreadCount: 0,
+            isOnline: false,
+            lastMessageTime: chat.lastMessageTime ? new Date(chat.lastMessageTime) : undefined // <-- Додаємо це!
+          };
+        });
+        setChats(mapped);
+      } catch (err) {
+        // TODO: обробка помилок
+      } finally {
+        setLoadingChats(false);
+      }
+    };
+    fetchChats();
+  }, []);
 
-  // Mock data для повідомлень
-  const messages: Record<string, Message[]> = {
-    '1': [
-      {
-        id: '1',
-        senderId: 'brand',
-        text: 'Привіт! Нас цікавить співпраця з вами для промоції нашого нового продукту.',
-        timestamp: new Date(2024, 0, 15, 10, 0),
-        isRead: true,
-      },
-      {
-        id: '2',
-        senderId: 'influencer',
-        text: 'Привіт! Дякую за звернення. Розкажіть більше про ваш продукт та умови співпраці.',
-        timestamp: new Date(2024, 0, 15, 11, 30),
-        isRead: true,
-      },
-      {
-        id: '3',
-        senderId: 'brand',
-        text: 'Це новий екологічний продукт для догляду за шкірою. Пропонуємо 500 грн за пост + безкоштовні зразки.',
-        timestamp: new Date(2024, 0, 15, 13, 15),
-        isRead: true,
-      },
-      {
-        id: '4',
-        senderId: 'influencer',
-        text: 'Дякую за пропозицію! Коли можемо обговорити деталі?',
-        timestamp: new Date(2024, 0, 15, 14, 30),
-        isRead: false,
-      },
-    ],
-  };
+  // Завантаження повідомлень для вибраного чату
+  useEffect(() => {
+    if (!selectedChat) return;
+    const fetchMessages = async () => {
+      setLoadingMessages(true);
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`http://localhost:5112/api/messages/${selectedChat}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // Перетворюємо рядки дат у Date
+        const parsed = res.data.map((m: any) => ({
+          ...m,
+          timestamp: new Date(m.timestamp)
+        }));
+        setMessages(prev => ({ ...prev, [selectedChat]: parsed }));
+      } catch (err) {
+        // TODO: обробка помилок
+      } finally {
+        setLoadingMessages(false);
+      }
+    };
+    fetchMessages();
+  }, [selectedChat]);
 
-  const filteredChats = chats.filter(chat =>
-    chat.participantName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredChats = chats; // без фільтрації по імені
 
   const selectedChatData = selectedChat ? chats.find(chat => chat.id === selectedChat) : null;
   const chatMessages = selectedChat ? messages[selectedChat] || [] : [];
 
-  const handleSendMessage = () => {
+  // Відправка повідомлення
+  const handleSendMessage = async () => {
     if (newMessage.trim() && selectedChat) {
-      // Тут буде логіка відправки повідомлення
-      setNewMessage('');
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.post(
+          `http://localhost:5112/api/messages/${selectedChat}`,
+          { text: newMessage },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // Додаємо нове повідомлення до списку
+        setMessages(prev => ({
+          ...prev,
+          [selectedChat]: [
+            ...(prev[selectedChat] || []),
+            { ...res.data, timestamp: new Date(res.data.timestamp) } // <-- Додаємо це!
+          ]
+        }));
+        setNewMessage('');
+      } catch (err) {
+        // TODO: обробка помилок
+      }
     }
   };
 
@@ -128,7 +145,8 @@ const Messages = () => {
     });
   };
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date?: Date) => {
+    if (!date) return '';
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
