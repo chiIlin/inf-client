@@ -21,9 +21,13 @@ const Login = () => {
         email,
         password,
       });
-      console.log("Role from backend:", response.data.role); // змінили на .role
-      localStorage.setItem("token", response.data.token);     // змінили на .token
-      localStorage.setItem("role", response.data.role);       // змінили на .role
+      console.log("Role from backend:", response.data.role);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("role", response.data.role);
+      
+      // Оповіщаємо про зміну стану аутентифікації
+      window.dispatchEvent(new Event("authStateChanged"));
+      
       setSuccess("Вхід успішний!");
       if (response.data.role === "company") {
         navigate("/brand-profile");

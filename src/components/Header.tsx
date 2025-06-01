@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/base-ui";
 import { Menu, X, Users, Building2 } from "lucide-react";
 
@@ -7,16 +7,47 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  // Функція для оновлення стану аутентифікації
+  const updateAuthState = () => {
     setIsLoggedIn(!!localStorage.getItem("token"));
     setRole(localStorage.getItem("role"));
+  };
+
+  useEffect(() => {
+    // Початкова перевірка
+    updateAuthState();
+
+    // Додаємо слухач подій для localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "token" || e.key === "role") {
+        updateAuthState();
+      }
+    };
+
+    // Додаємо кастомний слухач для програмних змін localStorage
+    const handleAuthChange = () => {
+      updateAuthState();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("authStateChanged", handleAuthChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("authStateChanged", handleAuthChange);
+    };
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     setIsLoggedIn(false);
-    window.location.reload(); // або navigate("/login")
+    setRole(null);
+    navigate("/");
+    // Оповіщаємо про зміну стану
+    window.dispatchEvent(new Event("authStateChanged"));
   };
 
   return (
