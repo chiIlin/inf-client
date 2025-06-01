@@ -120,9 +120,15 @@ const Header = () => {
             >
               Як це працює
             </Link>
-            {/* <Link to="/pricing" className="text-gray-700 hover:text-ua-pink transition-colors">
-              Тарифи
-            </Link> */}
+            {/* ДОДАЙТЕ ЦЕ ПОСИЛАННЯ (тимчасово для тестування) */}
+            {isLoggedIn && (
+              <Link
+                to="/admin"
+                className="text-red-600 hover:text-red-700 transition-colors font-semibold"
+              >
+                Адмінка
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Auth Buttons */}
