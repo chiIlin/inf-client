@@ -72,6 +72,7 @@ const App = () => {
           
           <Route path="/influencer-profile" element={<InfluencerProfile />} />
           <Route path="/brand-profile" element={<BrandProfile />} />
+          <Route path="/messages/:userId" element={<Messages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

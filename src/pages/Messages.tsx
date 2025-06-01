@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import {
   Button,
   Input,
@@ -36,9 +36,11 @@ interface Chat {
   lastMessageTime: Date;
   unreadCount: number;
   isOnline: boolean;
+  participants: string[]; // ДОДАЙТЕ ЦЕ
 }
 
 const Messages = () => {
+  const { userId } = useParams();
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +49,8 @@ const Messages = () => {
   const [loadingChats, setLoadingChats] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  console.log("userId from params:", userId);
 
   // Завантаження чатів при монтуванні
   useEffect(() => {
@@ -62,19 +66,10 @@ const Messages = () => {
         const userId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
         setCurrentUserId(userId); // Зберігаємо userId у стані
         // Для кожного чату визначаємо співрозмовника
-        const mapped = res.data.map((chat: any) => {
-          const otherId = chat.participants.find((id: string) => id !== userId);
-          return {
-            ...chat,
-            id: chat.id || chat._id,
-            participantName: 'Співрозмовник',
-            participantAvatar: '',
-            participantType: 'influencer',
-            unreadCount: 0,
-            isOnline: false,
-            lastMessageTime: chat.lastMessageTime ? new Date(chat.lastMessageTime) : undefined
-          };
-        });
+        const mapped = res.data.map((chat: any) => ({
+          ...chat,
+          lastMessageTime: chat.lastMessageTime ? new Date(chat.lastMessageTime) : undefined
+        }));
         setChats(mapped);
       } catch (err) {
         // TODO: обробка помилок
@@ -109,6 +104,28 @@ const Messages = () => {
     };
     fetchMessages();
   }, [selectedChat]);
+
+  useEffect(() => {
+    if (userId && chats.length > 0) {
+      // Шукаємо чат з цим userId
+      const chat = chats.find(chat => chat.participants.includes(userId));
+      if (chat) {
+        setSelectedChat(chat.id);
+      } else {
+        // Якщо чату нема — створюємо новий
+        const createChat = async () => {
+          const token = localStorage.getItem('token');
+          const res = await axios.post('http://localhost:5112/api/messages/create', 
+            { participantId: userId },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          setChats(prev => [...prev, res.data]);
+          setSelectedChat(res.data.id);
+        };
+        createChat();
+      }
+    }
+  }, [userId, chats]);
 
   const filteredChats = chats; // без фільтрації по імені
 
