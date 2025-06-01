@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Button,
@@ -13,26 +13,27 @@ import {
 } from '@/components/ui/base-ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Instagram, Youtube, Camera, Upload } from 'lucide-react';
+import { Users, Instagram, Youtube, Camera, Upload, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 const InfluencerProfile = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: 'Олена Петренко',
-    email: 'olena@example.com',
-    phone: '+380 (50) 123-45-67',
-    city: 'Київ',
-    bio: 'Тревел-блогер та ентузіаст здорового способу життя. Люблю ділитися своїми подорожами та рецептами здорової їжі.',
-    categories: 'Подорожі',
-    instagram: '@olena_travels',
-    youtube: '@OlenaTravels',
-    tiktok: '@olena_travels_tk',
-    followers: '25000',
-    engagement: '4.2'
+    name: '',
+    email: '',
+    phone: '',
+    city: '',
+    bio: '',
+    categories: '',
+    instagram: '',
+    youtube: '',
+    tiktok: '',
+    telegram: ''
   });
 
   const [avatarPreview, setAvatarPreview] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     'Мода', 'Красота', 'Стиль життя', 'Подорожі', 'Їжа', 'Фітнес', 
@@ -43,6 +44,53 @@ const InfluencerProfile = () => {
     'Київ', 'Львів', 'Одеса', 'Харків', 'Дніпро', 'Запоріжжя', 
     'Вінниця', 'Полтава', 'Чернігів', 'Черкаси', 'Інше'
   ];
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast({
+            title: "Помилка",
+            description: "Необхідно увійти в систему",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const response = await axios.get('http://localhost:5112/api/profile/influencer', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const profile = response.data;
+        setFormData({
+          name: profile.fullName || '',
+          email: profile.email || '',
+          phone: profile.phoneNumber || '',
+          city: profile.city || '',
+          bio: profile.biography || '',
+          categories: profile.contentCategories || '',
+          instagram: profile.instagramHandle || '',
+          youtube: profile.youtubeHandle || '',
+          tiktok: profile.tiktokHandle || '',
+          telegram: profile.telegramHandle || ''
+        });
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "Помилка",
+          description: "Не вдалося завантажити профіль",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [toast]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -59,12 +107,57 @@ const InfluencerProfile = () => {
     }
   };
 
-  const handleSave = () => {
-    toast({
-      title: "Профіль оновлено",
-      description: "Ваші зміни успішно збережено.",
-    });
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Помилка",
+          description: "Необхідно увійти в систему",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      await axios.put('http://localhost:5112/api/profile/influencer', {
+        fullName: formData.name,
+        phoneNumber: formData.phone,
+        city: formData.city,
+        biography: formData.bio,
+        contentCategories: formData.categories,
+        instagramHandle: formData.instagram,
+        youtubeHandle: formData.youtube,
+        tiktokHandle: formData.tiktok,
+        telegramHandle: formData.telegram
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      toast({
+        title: "Профіль оновлено",
+        description: "Ваші зміни успішно збережено.",
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Помилка",
+        description: "Не вдалося оновити профіль",
+        variant: "destructive"
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-4xl text-center">
+          <p>Завантаження профілю...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 px-4">
@@ -91,7 +184,7 @@ const InfluencerProfile = () => {
                 <Avatar className="w-32 h-32 mx-auto">
                   <AvatarImage src={avatarPreview} />
                   <AvatarFallback className="text-2xl bg-gradient-to-r from-ua-pink to-ua-pink-soft text-white">
-                    {formData.name.split(' ').map(n => n[0]).join('')}
+                    {formData.name ? formData.name.split(' ').map(n => n[0]).join('') : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -145,8 +238,8 @@ const InfluencerProfile = () => {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="border-ua-blue-light focus:border-ua-pink"
+                      disabled
+                      className="border-ua-blue-light focus:border-ua-pink bg-gray-50"
                     />
                   </div>
                 </div>
@@ -226,23 +319,28 @@ const InfluencerProfile = () => {
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="followers">Кількість підписників *</Label>
-                      <Input 
-                        id="followers"
-                        type="number"
-                        value={formData.followers}
-                        onChange={(e) => handleInputChange('followers', e.target.value)}
-                        className="border-ua-blue-light focus:border-ua-pink"
-                      />
+                      <Label htmlFor="tiktok">TikTok</Label>
+                      <div className="relative">
+                        <Camera className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input 
+                          id="tiktok"
+                          value={formData.tiktok}
+                          onChange={(e) => handleInputChange('tiktok', e.target.value)}
+                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                        />
+                      </div>
                     </div>
                     <div>
-                      <Label htmlFor="engagement">Середній engagement (%)</Label>
-                      <Input 
-                        id="engagement"
-                        value={formData.engagement}
-                        onChange={(e) => handleInputChange('engagement', e.target.value)}
-                        className="border-ua-blue-light focus:border-ua-pink"
-                      />
+                      <Label htmlFor="telegram">Telegram канал</Label>
+                      <div className="relative">
+                        <MessageCircle className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input 
+                          id="telegram"
+                          value={formData.telegram}
+                          onChange={(e) => handleInputChange('telegram', e.target.value)}
+                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

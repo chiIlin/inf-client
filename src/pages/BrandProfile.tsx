@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Button,
@@ -15,24 +15,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Building2, Globe, Users, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 const BrandProfile = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    company: 'TechStyle Ukraine',
-    contactName: 'Марія Коваленко',
-    email: 'maria@techstyle.ua',
-    phone: '+380 (44) 123-45-67',
-    website: 'https://techstyle.ua',
-    industry: 'Мода та одяг',
-    companySize: 'Середня компанія (51-200 співробітників)',
-    description: 'Український бренд сучасного одягу, який поєднує традиційні техніки та інноваційні рішення. Ми створюємо якісний одяг для молодих професіоналів.',
-    goals: 'Збільшення впізнаваності бренду серед молодої аудиторії та просування нових колекцій через автентичний контент.',
-    budget: '25k-50k',
-    targetAudience: '22-35, жінки та чоловіки, Київ, Львів'
+    company: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    website: '',
+    industry: '',
+    companySize: '',
+    description: '',
+    budget: '',
+    targetAudience: ''
   });
 
   const [logoPreview, setLogoPreview] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
   const industries = [
     'Мода та одяг', 'Краса та косметика', 'Їжа та напої', 'Технології', 
@@ -46,6 +47,53 @@ const BrandProfile = () => {
     'Середня компанія (51-200 співробітників)',
     'Велика компанія (200+ співробітників)'
   ];
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast({
+            title: "Помилка",
+            description: "Необхідно увійти в систему",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const response = await axios.get('http://localhost:5112/api/profile/company', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const profile = response.data;
+        setFormData({
+          company: profile.companyName || '',
+          contactName: profile.contactPerson || '',
+          email: profile.email || '',
+          phone: profile.companyPhone || '',
+          website: profile.website || '',
+          industry: profile.industry || '',
+          companySize: profile.companySize || '',
+          description: profile.companyDescription || '',
+          budget: profile.budgetRange || '',
+          targetAudience: profile.targetAudience || ''
+        });
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "Помилка",
+          description: "Не вдалося завантажити профіль",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [toast]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -62,12 +110,57 @@ const BrandProfile = () => {
     }
   };
 
-  const handleSave = () => {
-    toast({
-      title: "Профіль оновлено",
-      description: "Дані вашої компанії успішно збережено.",
-    });
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Помилка",
+          description: "Необхідно увійти в систему",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      await axios.put('http://localhost:5112/api/profile/company', {
+        companyName: formData.company,
+        contactPerson: formData.contactName,
+        companyPhone: formData.phone,
+        website: formData.website,
+        industry: formData.industry,
+        companySize: formData.companySize,
+        companyDescription: formData.description,
+        budgetRange: formData.budget,
+        targetAudience: formData.targetAudience
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      toast({
+        title: "Профіль оновлено",
+        description: "Дані вашої компанії успішно збережено.",
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Помилка",
+        description: "Не вдалося оновити профіль",
+        variant: "destructive"
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-4xl text-center">
+          <p>Завантаження профілю...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 px-4">
@@ -95,7 +188,7 @@ const BrandProfile = () => {
                 <Avatar className="w-32 h-32 mx-auto rounded-lg">
                   <AvatarImage src={logoPreview} className="rounded-lg" />
                   <AvatarFallback className="text-2xl bg-gradient-to-r from-ua-blue to-ua-blue-soft text-white rounded-lg">
-                    {formData.company.split(' ').map(n => n[0]).join('')}
+                    {formData.company ? formData.company.split(' ').map(n => n[0]).join('') : 'C'}
                   </AvatarFallback>
                 </Avatar>
                 
@@ -164,8 +257,8 @@ const BrandProfile = () => {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="border-ua-blue-light focus:border-ua-pink"
+                      disabled
+                      className="border-ua-blue-light focus:border-ua-pink bg-gray-50"
                     />
                   </div>
                   <div>
@@ -228,16 +321,6 @@ const BrandProfile = () => {
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     className="border-ua-blue-light focus:border-ua-pink min-h-[100px]"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="goals">Цілі співпраці з інфлюенсерами</Label>
-                  <Textarea 
-                    id="goals"
-                    value={formData.goals}
-                    onChange={(e) => handleInputChange('goals', e.target.value)}
-                    className="border-ua-blue-light focus:border-ua-pink min-h-[80px]"
                   />
                 </div>
 
