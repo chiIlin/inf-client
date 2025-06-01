@@ -16,9 +16,9 @@ import ScrollToTop from "@/components/ScrollToTop";
 import About from "./pages/About";
 import InfluencerProfile from "@/pages/InfluencerProfile";
 import BrandProfile from "@/pages/BrandProfile";
+import Messages from "./pages/Messages";
 import { useEffect } from "react";
 import axios from "axios";
-
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -54,30 +54,31 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Router>
-          <Header />
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/catalog" element={<Catalog />} />
-            <Route path="/register-influencer" element={<RegisterInfluencer />} />
-            <Route path="/register-brand" element={<RegisterBrand />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/influencer-profile" element={<InfluencerProfile />} />
-            <Route path="/brand-profile" element={<BrandProfile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Footer />
-        </Router>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <Router>
+        <Header />
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/catalog" element={<Catalog />} />
+          <Route path="/register-influencer" element={<RegisterInfluencer />} />
+          <Route path="/register-brand" element={<RegisterBrand />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<About />} /> {/* Add the About route */}
+          
+          <Route path="/influencer-profile" element={<InfluencerProfile />} />
+          <Route path="/brand-profile" element={<BrandProfile />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Footer />
+      </Router>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 };
-
 export default App;
