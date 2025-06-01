@@ -9,12 +9,10 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-  Badge,
   Label,
-  Separator
 } from '@/components/ui/base-ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Instagram, Youtube, Camera, MessageCircle } from 'lucide-react';
+import { Users, Camera, Instagram, Youtube } from 'lucide-react';
 import axios from 'axios';
 
 const RegisterInfluencer = () => {
@@ -25,7 +23,7 @@ const RegisterInfluencer = () => {
     phone: '',
     city: '',
     bio: '',
-    categories: [],
+    categories: '',
     instagram: '',
     youtube: '',
     tiktok: '',
@@ -56,7 +54,7 @@ const RegisterInfluencer = () => {
         phoneNumber: formData.phone,
         city: formData.city,
         biography: formData.bio,
-        contentCategories: formData.categories.join(','),
+        contentCategories: formData.categories,
         instagramHandle: formData.instagram,
         youtubeHandle: formData.youtube,
         tiktokHandle: formData.tiktok,
@@ -70,7 +68,6 @@ const RegisterInfluencer = () => {
 
   return (
     <div className="min-h-screen">
-      
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-2xl">
           <div className="text-center mb-12">
@@ -143,7 +140,7 @@ const RegisterInfluencer = () => {
                   </div>
                   <div>
                     <Label htmlFor="city">Місто *</Label>
-                    <Select>
+                    <Select value={formData.city} onValueChange={(value) => setFormData({ ...formData, city: value })}>
                       <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                         <SelectValue placeholder="Оберіть місто" />
                       </SelectTrigger>
@@ -162,12 +159,14 @@ const RegisterInfluencer = () => {
                     id="bio"
                     placeholder="Розкажіть про себе, ваш стиль та те, що робить ваш контент унікальним..."
                     className="border-ua-blue-light focus:border-ua-pink min-h-[100px]"
+                    value={formData.bio}
+                    onChange={e => setFormData({ ...formData, bio: e.target.value })}
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="categories">Категорії контенту *</Label>
-                  <Select>
+                  <Select value={formData.categories} onValueChange={(value) => setFormData({ ...formData, categories: value })}>
                     <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                       <SelectValue placeholder="Оберіть основні категорії" />
                     </SelectTrigger>
@@ -177,10 +176,6 @@ const RegisterInfluencer = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {/* Додаємо контейнер для бейджів, якщо потрібно показувати вибрані категорії */}
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {/* Тут можуть бути бейджі вибраних категорій */}
-                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -195,6 +190,8 @@ const RegisterInfluencer = () => {
                           id="instagram"
                           placeholder="@your_instagram"
                           className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                          value={formData.instagram}
+                          onChange={e => setFormData({ ...formData, instagram: e.target.value })}
                         />
                       </div>
                     </div>
@@ -204,8 +201,10 @@ const RegisterInfluencer = () => {
                         <Youtube className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input 
                           id="youtube"
-                          placeholder="@your_youtube"
+                          placeholder="@your_channel"
                           className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                          value={formData.youtube}
+                          onChange={e => setFormData({ ...formData, youtube: e.target.value })}
                         />
                       </div>
                     </div>
@@ -214,25 +213,23 @@ const RegisterInfluencer = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="tiktok">TikTok</Label>
-                      <div className="relative">
-                        <Camera className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          id="tiktok"
-                          placeholder="@your_tiktok"
-                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
-                        />
-                      </div>
+                      <Input 
+                        id="tiktok"
+                        placeholder="@your_tiktok"
+                        className="border-ua-blue-light focus:border-ua-pink"
+                        value={formData.tiktok}
+                        onChange={e => setFormData({ ...formData, tiktok: e.target.value })}
+                      />
                     </div>
                     <div>
-                      <Label htmlFor="telegram">Telegram канал</Label>
-                      <div className="relative">
-                        <MessageCircle className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          id="telegram"
-                          placeholder="@your_telegram"
-                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
-                        />
-                      </div>
+                      <Label htmlFor="telegram">Telegram</Label>
+                      <Input 
+                        id="telegram"
+                        placeholder="@your_telegram"
+                        className="border-ua-blue-light focus:border-ua-pink"
+                        value={formData.telegram}
+                        onChange={e => setFormData({ ...formData, telegram: e.target.value })}
+                      />
                     </div>
                   </div>
                 </div>
@@ -261,7 +258,6 @@ const RegisterInfluencer = () => {
           </Card>
         </div>
       </section>
-      
     </div>
   );
 };
