@@ -11,6 +11,7 @@ import {
   SelectValue
 } from '@/components/ui/base-ui';
 import { Search, Instagram, MessageCircle, MapPin, Users, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const mockInfluencers = [
   {
@@ -211,10 +212,13 @@ const InfluencerCatalog = () => {
                 </div>
                 
                 <Button 
+                  asChild
                   className="w-full bg-gradient-to-r from-ua-pink to-ua-pink-soft hover:from-ua-pink-soft hover:to-ua-pink text-white"
                 >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Зв'язатися
+                  <Link to="/messages">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Зв'язатися
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

@@ -16,6 +16,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import About from "./pages/About"; // Import the About component
 import InfluencerProfile from "@/pages/InfluencerProfile";
 import BrandProfile from "@/pages/BrandProfile";
+import Messages from "./pages/Messages"; // Import the Messages component
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/about" element={<About />} /> {/* Add the About route */}
           <Route path="/influencer-profile" element={<InfluencerProfile />} />
           <Route path="/brand-profile" element={<BrandProfile />} />
+          <Route path="/messages" element={<Messages />} /> {/* Add the Messages route */}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
