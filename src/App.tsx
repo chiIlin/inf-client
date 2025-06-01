@@ -20,6 +20,29 @@ import Messages from "./pages/Messages";
 import AdminDashboard from "./pages/AdminDashboard";
 import { useEffect } from "react";
 import axios from "axios";
+
+// ДОДАЄМО компонент для захисту адмін маршруту
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const role = localStorage.getItem("role");
+
+  if (role !== "admin") {
+    return (
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-4xl text-center">
+          <h1 className="text-4xl font-bold mb-4 text-red-600">
+            Доступ заборонено
+          </h1>
+          <p className="text-xl text-gray-600">
+            Ця сторінка доступна тільки адміністраторам системи.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  return <>{children}</>;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -30,11 +53,15 @@ const App = () => {
 
       if (token && role) {
         try {
-          // Вибираємо правильний ендпоінт залежно від ролі
-          const endpoint =
-            role === "company"
-              ? "http://localhost:5112/api/profile/company"
-              : "http://localhost:5112/api/profile/influencer";
+          // ОНОВЛЮЄМО: додаємо підтримку admin ролі
+          let endpoint = "";
+          if (role === "admin") {
+            endpoint = "http://localhost:5112/api/admin/stats"; // Простий endpoint для перевірки токена адміна
+          } else if (role === "company") {
+            endpoint = "http://localhost:5112/api/profile/company";
+          } else {
+            endpoint = "http://localhost:5112/api/profile/influencer";
+          }
 
           await axios.get(endpoint, {
             headers: { Authorization: `Bearer ${token}` },
@@ -70,14 +97,21 @@ const App = () => {
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/login" element={<Login />} />
             <Route path="/about" element={<About />} />
-            
+
             <Route path="/influencer-profile" element={<InfluencerProfile />} />
             <Route path="/brand-profile" element={<BrandProfile />} />
             <Route path="/messages/:userId" element={<Messages />} />
-            
-            {/* ДОДАЙТЕ ЦЕЙ МАРШРУТ */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            
+
+            {/* ОНОВЛЮЄМО: захищаємо адмін маршрут */}
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />

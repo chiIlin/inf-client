@@ -120,8 +120,8 @@ const Header = () => {
             >
               Як це працює
             </Link>
-            {/* ДОДАЙТЕ ЦЕ ПОСИЛАННЯ (тимчасово для тестування) */}
-            {isLoggedIn && (
+            {/* ОНОВЛЮЄМО: показуємо адмінку тільки для ролі admin */}
+            {isLoggedIn && role === "admin" && (
               <Link
                 to="/admin"
                 className="text-red-600 hover:text-red-700 transition-colors font-semibold"
@@ -141,11 +141,14 @@ const Header = () => {
                 >
                   Вийти
                 </button>
-                <Link to={role === "company" ? "/brand-profile" : "/influencer-profile"}>
-                  <button className="bg-ua-pink text-white px-4 py-2 rounded hover:bg-ua-pink-soft transition">
-                    Профіль
-                  </button>
-                </Link>
+                {/* ОНОВЛЮЄМО: показуємо профіль тільки для звичайних користувачів */}
+                {role !== "admin" && (
+                  <Link to={role === "company" ? "/brand-profile" : "/influencer-profile"}>
+                    <button className="bg-ua-pink text-white px-4 py-2 rounded hover:bg-ua-pink-soft transition">
+                      Профіль
+                    </button>
+                  </Link>
+                )}
               </div>
             ) : (
               <>
@@ -195,9 +198,15 @@ const Header = () => {
               >
                 Як це працює
               </Link>
-              {/* <Link to="/pricing" className="text-gray-700 hover:text-ua-pink transition-colors py-2">
-                Тарифи
-              </Link> */}
+              {/* ОНОВЛЮЄМО: мобільна версія адмінки */}
+              {isLoggedIn && role === "admin" && (
+                <Link
+                  to="/admin"
+                  className="text-red-600 hover:text-red-700 transition-colors font-semibold py-2"
+                >
+                  Адмінка
+                </Link>
+              )}
               <div className="flex flex-col space-y-2 pt-3 border-t border-ua-pink-light">
                 {isLoggedIn ? (
                   <div className="flex flex-col gap-2">
@@ -207,11 +216,14 @@ const Header = () => {
                     >
                       Вийти
                     </button>
-                    <Link to={role === "company" ? "/brand-profile" : "/influencer-profile"}>
-                      <button className="bg-ua-pink text-white px-4 py-2 rounded hover:bg-ua-pink-soft transition">
-                        Профіль
-                      </button>
-                    </Link>
+                    {/* ОНОВЛЮЄМО: мобільна версія профілю */}
+                    {role !== "admin" && (
+                      <Link to={role === "company" ? "/brand-profile" : "/influencer-profile"}>
+                        <button className="bg-ua-pink text-white px-4 py-2 rounded hover:bg-ua-pink-soft transition w-full">
+                          Профіль
+                        </button>
+                      </Link>
+                    )}
                   </div>
                 ) : (
                   <>

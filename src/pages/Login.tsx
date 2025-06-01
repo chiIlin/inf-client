@@ -29,7 +29,11 @@ const Login = () => {
       window.dispatchEvent(new Event("authStateChanged"));
       
       setSuccess("Вхід успішний!");
-      if (response.data.role === "company") {
+      
+      // ОНОВЛЮЄМО: додаємо перенаправлення для адміна
+      if (response.data.role === "admin") {
+        navigate("/admin");
+      } else if (response.data.role === "company") {
         navigate("/brand-profile");
       } else if (response.data.role === "influencer") {
         navigate("/influencer-profile");
