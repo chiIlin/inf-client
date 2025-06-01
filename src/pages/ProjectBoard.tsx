@@ -1,77 +1,71 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input, Button, Badge } from '@/components/ui/base-ui';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, MapPin, DollarSign, Calendar, Users, Building2, MessageCircle } from 'lucide-react';
+import axios from 'axios';
+
+interface Producer {
+  companyName?: string;
+  fullName?: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  budget: number;
+  link: string;
+  isOpen: boolean;
+  createdAt: string;
+  expiresAt?: string;
+  producer?: Producer;
+  category?: Category;
+}
 
 const ProjectBoard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBudget, setSelectedBudget] = useState('all');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data для проєктів
-  const projects = [
-    {
-      id: 1,
-      title: 'Промо новної лінії косметики',
-      brand: 'BeautyBrand UA',
-      category: 'beauty',
-      budget: '5000-10000',
-      location: 'Київ',
-      deadline: '2024-07-15',
-      followers: '10k+',
-      description: 'Шукаємо beauty-блогерів для промо нової лінії органічної косметики. Потрібен контент у Instagram та TikTok.',
-      requirements: ['10k+ підписників', 'Beauty-тематика', 'Київ або область'],
-      isUrgent: false
-    },
-    {
-      id: 2,
-      title: 'Реклама спортивного одягу',
-      brand: 'SportWear Pro',
-      category: 'fitness',
-      budget: '3000-7000',
-      location: 'Онлайн',
-      deadline: '2024-07-10',
-      followers: '5k+',
-      description: 'Потрібні фітнес-інфлюенсери для демонстрації нової колекції спортивного одягу.',
-      requirements: ['5k+ підписників', 'Фітнес-контент', 'Активний профіль'],
-      isUrgent: true
-    },
-    {
-      id: 3,
-      title: 'Огляд IT-продукту',
-      brand: 'TechStart',
-      category: 'tech',
-      budget: '8000-15000',
-      location: 'Львів',
-      deadline: '2024-07-20',
-      followers: '20k+',
-      description: 'Шукаємо tech-блогерів для детального огляду нашого нового мобільного додатку.',
-      requirements: ['20k+ підписників', 'Tech-тематика', 'Досвід з IT-оглядами'],
-      isUrgent: false
-    },
-    {
-      id: 4,
-      title: 'Промо ресторану',
-      brand: 'Delicious Food',
-      category: 'food',
-      budget: '2000-5000',
-      location: 'Одеса',
-      deadline: '2024-07-12',
-      followers: '3k+',
-      description: 'Потрібні фуд-блогери для відвідування та промо нашого нового ресторану.',
-      requirements: ['3k+ підписників', 'Food-контент', 'Одеса'],
-      isUrgent: true
-    }
-  ];
+  // Завантажуємо проєкти з API
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        console.log('Fetching projects from API...');
+        const response = await axios.get('http://localhost:5112/api/campaigns/open');
+        console.log('API Response:', response);
+        console.log('Projects data:', response.data);
+        setProjects(response.data);
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        console.error('Error details:', error.response?.data);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || project.category === selectedCategory;
-    const matchesBudget = selectedBudget === 'all' || project.budget.includes(selectedBudget);
+    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (project.producer?.companyName || project.producer?.fullName || '').toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = selectedCategory === 'all' || 
+                           (project.category?.name.toLowerCase() === selectedCategory.toLowerCase());
+    
+    const matchesBudget = selectedBudget === 'all' || 
+                         project.budget >= parseInt(selectedBudget);
     
     return matchesSearch && matchesCategory && matchesBudget;
   });
@@ -83,10 +77,28 @@ const ProjectBoard = () => {
       tech: 'Технології',
       food: 'Їжа',
       lifestyle: 'Лайфстайл',
-      travel: 'Подорожі'
+      travel: 'Подорожі',
+      косметика: 'Краса',
+      технології: 'Технології'
     };
-    return categories[category] || category;
+    return categories[category.toLowerCase()] || category;
   };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('uk-UA');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-600">Завантаження проєктів...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50">
@@ -124,12 +136,12 @@ const ProjectBoard = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Всі категорії</SelectItem>
-                    <SelectItem value="beauty">Краса</SelectItem>
-                    <SelectItem value="fitness">Фітнес</SelectItem>
-                    <SelectItem value="tech">Технології</SelectItem>
-                    <SelectItem value="food">Їжа</SelectItem>
+                    <SelectItem value="краса">Краса</SelectItem>
+                    <SelectItem value="фітнес">Фітнес</SelectItem>
+                    <SelectItem value="технології">Технології</SelectItem>
+                    <SelectItem value="їжа">Їжа</SelectItem>
                     <SelectItem value="lifestyle">Лайфстайл</SelectItem>
-                    <SelectItem value="travel">Подорожі</SelectItem>
+                    <SelectItem value="подорожі">Подорожі</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -153,28 +165,27 @@ const ProjectBoard = () => {
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
           {filteredProjects.map((project) => (
-            <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border-ua-pink-light hover:border-ua-pink flex flex-col h-[550px]">
+            <Card key={project.id} className="group hover:shadow-lg transition-all duration-300 bg-white/80 backdrop-blur-sm border-ua-pink-light hover:border-ua-pink flex flex-col h-[450px]">
               <CardHeader className="pb-4 flex-shrink-0">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2 mb-2">
                       <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-ua-pink transition-colors line-clamp-2 leading-tight">
-                        {project.title}
+                        {project.name}
                       </CardTitle>
-                      {project.isUrgent && (
-                        <Badge className="bg-red-100 text-red-700 border-red-200 text-xs flex-shrink-0 mt-0.5">
-                          Терміново
-                        </Badge>
-                      )}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Building2 className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">{project.brand}</span>
+                      <span className="truncate">
+                        {project.producer?.companyName || project.producer?.fullName || 'Невідомий бренд'}
+                      </span>
                     </div>
                   </div>
-                  <Badge variant="outline" className="border-ua-pink text-ua-pink text-xs flex-shrink-0">
-                    {getCategoryLabel(project.category)}
-                  </Badge>
+                  {project.category && (
+                    <Badge variant="outline" className="border-ua-pink text-ua-pink text-xs flex-shrink-0">
+                      {getCategoryLabel(project.category.name)}
+                    </Badge>
+                  )}
                 </div>
               </CardHeader>
               
@@ -187,32 +198,14 @@ const ProjectBoard = () => {
                     <span className="font-medium truncate">{project.budget} грн</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <Users className="h-4 w-4 text-ua-blue flex-shrink-0" />
-                    <span className="truncate">{project.followers}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
                     <MapPin className="h-4 w-4 text-ua-blue flex-shrink-0" />
-                    <span className="truncate">{project.location}</span>
+                    <span className="truncate">{project.link || 'Онлайн'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="h-4 w-4 text-ua-blue flex-shrink-0" />
-                    <span className="truncate">{new Date(project.deadline).toLocaleDateString('uk-UA')}</span>
-                  </div>
-                </div>
-
-                <div className="flex-1 mb-4">
-                  <h4 className="font-medium text-sm text-gray-900 mb-2">Вимоги:</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {project.requirements.slice(0, 3).map((req, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {req}
-                      </Badge>
-                    ))}
-                    {project.requirements.length > 3 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{project.requirements.length - 3}
-                      </Badge>
-                    )}
+                    <span className="truncate">
+                      {project.expiresAt ? formatDate(project.expiresAt) : 'Без дедлайну'}
+                    </span>
                   </div>
                 </div>
 
@@ -231,7 +224,7 @@ const ProjectBoard = () => {
           ))}
         </div>
 
-        {filteredProjects.length === 0 && (
+        {filteredProjects.length === 0 && !loading && (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="h-12 w-12 text-gray-400" />
@@ -241,7 +234,6 @@ const ProjectBoard = () => {
           </div>
         )}
       </div>
-
     </div>
   );
 };

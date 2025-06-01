@@ -251,30 +251,67 @@ const BrandProfile = () => {
       }
 
       // Валідація обов'язкових полів
-      if (!projectForm.title || !projectForm.description || !projectForm.category || !projectForm.budget) {
+      if (!projectForm.title?.trim() || !projectForm.description?.trim() || !projectForm.budget) {
         toast({
           title: "Помилка",
-          description: "Заповніть всі обов'язкові поля",
+          description: "Заповніть всі обов'язкові поля (назва, опис, бюджет)",
           variant: "destructive"
         });
         return;
       }
 
-      // Тут буде API виклик для створення кампанії
-      await axios.post('http://localhost:5112/api/campaigns', {
-        name: projectForm.title,
-        description: projectForm.description,
-        categoryId: projectForm.category, // Потрібно буде отримати ID категорії
-        budget: projectForm.budget,
-        location: projectForm.location,
-        deadline: projectForm.deadline ? new Date(projectForm.deadline).toISOString() : null,
-        requirements: projectForm.requirements.split(',').map(req => req.trim()).filter(req => req),
-        minFollowers: projectForm.followers
-      }, {
+      console.log('Project form data:', projectForm);
+
+      // Парсимо бюджет
+      const budgetParts = projectForm.budget.split('-');
+      const budgetValue = budgetParts.length > 0 ? parseInt(budgetParts[0]) : 1000;
+
+      if (isNaN(budgetValue) || budgetValue <= 0) {
+        toast({
+          title: "Помилка",
+          description: "Введіть коректний бюджет",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Спочатку отримуємо список категорій
+      let categoryId = null;
+      try {
+        const categoriesResponse = await axios.get('http://localhost:5112/api/campaigns/categories');
+        console.log('Categories from API:', categoriesResponse.data);
+        const categories = categoriesResponse.data;
+        
+        if (categories && categories.length > 0) {
+          // Використовуємо першу доступну категорію
+          categoryId = categories[0].id;
+          console.log('Using category:', categories[0]);
+        }
+      } catch (categoriesError) {
+        console.error('Error fetching categories:', categoriesError);
+        // Продовжуємо створення без категорії
+      }
+
+      // Створюємо кампанію
+      const campaignData = {
+        name: projectForm.title.trim(),
+        description: projectForm.description.trim(),
+        categoryId: categoryId,
+        budget: budgetValue,
+        link: projectForm.location?.trim() || "",
+        expiresAt: projectForm.deadline ? new Date(projectForm.deadline).toISOString() : null
+      };
+
+      console.log('Creating campaign with data:', campaignData);
+
+      const createResponse = await axios.post('http://localhost:5112/api/campaigns', campaignData, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
+
+      console.log('Campaign created successfully:', createResponse.data);
 
       toast({
         title: "Проєкт створено!",
@@ -296,9 +333,20 @@ const BrandProfile = () => {
 
     } catch (error) {
       console.error('Error creating project:', error);
+      console.error('Error response:', error.response?.data);
+      
+      let errorMessage = "Не вдалося створити проєкт";
+      if (error.response?.data?.Message) {
+        errorMessage = error.response.data.Message;
+      } else if (error.response?.data?.Error) {
+        errorMessage = error.response.data.Error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
       toast({
         title: "Помилка",
-        description: "Не вдалося створити проєкт",
+        description: errorMessage,
         variant: "destructive"
       });
     }
