@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Button,
@@ -11,92 +12,58 @@ import {
   SelectValue
 } from '@/components/ui/base-ui';
 import { Search, Instagram, MessageCircle, MapPin, Users, Eye } from 'lucide-react';
-
-const mockInfluencers = [
-  {
-    id: 1,
-    name: 'Анна Коваленко',
-    bio: 'Fashion блогер з Києва. Ділюся стилем та трендами моди.',
-    city: 'Київ',
-    followers: 25000,
-    engagement: '4.2%',
-    categories: ['Мода', 'Стиль життя'],
-    instagram: '@anna_style_ua',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face'
-  },
-  {
-    id: 2,
-    name: 'Максим Петренко',
-    bio: 'Travel блогер. Показую красу України та світу.',
-    city: 'Львів',
-    followers: 18500,
-    engagement: '5.8%',
-    categories: ['Подорожі', 'Фотографія'],
-    instagram: '@max_travels',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
-  },
-  {
-    id: 3,
-    name: 'Олена Сидорова',
-    bio: 'Фітнес тренер та нутриціолог. Здорове харчування і спорт.',
-    city: 'Одеса',
-    followers: 32000,
-    engagement: '6.1%',
-    categories: ['Фітнес', 'Здоров\'я'],
-    instagram: '@elena_fit',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
-  },
-  {
-    id: 4,
-    name: 'Дмитро Іваненко',
-    bio: 'Tech блогер. Огляди гаджетів та технологічні новинки.',
-    city: 'Харків',
-    followers: 22000,
-    engagement: '3.9%',
-    categories: ['Технології', 'Гаджети'],
-    instagram: '@dmitro_tech',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
-  },
-  {
-    id: 5,
-    name: 'Марія Бойко',
-    bio: 'Beauty блогер. Makeup tutorials та огляди косметики.',
-    city: 'Дніпро',
-    followers: 41000,
-    engagement: '7.2%',
-    categories: ['Краса', 'Макіяж'],
-    instagram: '@maria_beauty',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face'
-  },
-  {
-    id: 6,
-    name: 'Артем Мельник',
-    bio: 'Food блогер з Києва. Рецепти та огляди ресторанів.',
-    city: 'Київ',
-    followers: 19500,
-    engagement: '4.8%',
-    categories: ['Їжа', 'Ресторани'],
-    instagram: '@artem_foodie',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
-  }
-];
+import { Link } from 'react-router-dom';
 
 const categories = ['Всі', 'Мода', 'Стиль життя', 'Подорожі', 'Фотографія', 'Фітнес', 'Здоров\'я', 'Технології', 'Гаджети', 'Краса', 'Макіяж', 'Їжа', 'Ресторани'];
 const cities = ['Всі міста', 'Київ', 'Львів', 'Одеса', 'Харків', 'Дніпро'];
 
 const InfluencerCatalog = () => {
+  const [influencers, setInfluencers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Всі');
   const [selectedCity, setSelectedCity] = useState('Всі міста');
   const [minFollowers, setMinFollowers] = useState('');
 
-  const filteredInfluencers = mockInfluencers.filter(influencer => {
-    const matchesSearch = influencer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         influencer.bio.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'Всі' || influencer.categories.includes(selectedCategory);
-    const matchesCity = selectedCity === 'Всі міста' || influencer.city === selectedCity;
-    const matchesFollowers = !minFollowers || influencer.followers >= parseInt(minFollowers);
-    
+  useEffect(() => {
+    const fetchInfluencers = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get('http://localhost:5112/api/profile/influencers');
+        console.log('Дані з беку:', res.data); // Додаємо логування
+        const mapped = res.data.map((inf: any) => ({
+          id: inf.id,
+          name: inf.fullName,
+          bio: inf.biography,
+          city: inf.city,
+          categories: (inf.contentCategories || '').split(',').map((c: string) => c.trim()).filter(Boolean),
+          instagram: inf.instagramHandle,
+          followers: inf.instagramFollowers || 0,
+          engagement: '',
+          avatar: inf.photoUrl || '/default-avatar.png'
+        }));
+        setInfluencers(mapped);
+      } catch (err) {
+        setInfluencers([]);
+        console.error('Помилка при отриманні інфлюенсерів:', err); // Додаємо логування помилки
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInfluencers();
+  }, []);
+
+  const filteredInfluencers = influencers.filter(influencer => {
+    const matchesSearch =
+      influencer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      influencer.bio?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'Всі' || influencer.categories.includes(selectedCategory);
+    const matchesCity =
+      selectedCity === 'Всі міста' || influencer.city === selectedCity;
+    const matchesFollowers =
+      !minFollowers || influencer.followers >= parseInt(minFollowers);
+
     return matchesSearch && matchesCategory && matchesCity && matchesFollowers;
   });
 
@@ -129,7 +96,7 @@ const InfluencerCatalog = () => {
               <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                 <SelectValue placeholder="Категорія" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-ua-blue-light">
+              <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                 {categories.map(category => (
                   <SelectItem key={category} value={category}>{category}</SelectItem>
                 ))}
@@ -140,7 +107,7 @@ const InfluencerCatalog = () => {
               <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
                 <SelectValue placeholder="Місто" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-ua-blue-light">
+              <SelectContent className="bg-white border-ua-blue-light scroll-smooth max-h-72 overflow-y-auto">
                 {cities.map(city => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
                 ))}
@@ -160,60 +127,82 @@ const InfluencerCatalog = () => {
         {/* Results */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredInfluencers.map(influencer => (
-            <Card key={influencer.id} className="card-hover bg-white/80 backdrop-blur-sm border-ua-pink-light">
-              <CardHeader className="text-center">
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden border-4 border-gradient-to-r from-ua-pink to-ua-blue">
-                  <img 
-                    src={influencer.avatar} 
+            <Card key={influencer.id} className="bg-white/80 backdrop-blur-sm border-ua-pink-light transition-all duration-300 hover:shadow-lg hover:-translate-y-1 will-change-transform flex flex-col h-full">
+              <CardHeader className="text-center pb-4">
+                <div className="relative mx-auto mb-4">
+                  <img
+                    src={influencer.avatar}
                     alt={influencer.name}
-                    className="w-full h-full object-cover"
+                    className="w-20 h-20 rounded-full object-cover border-4 border-ua-pink-light"
                   />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
-                <CardTitle className="text-xl font-semibold">{influencer.name}</CardTitle>
-                <CardDescription className="text-gray-600">{influencer.bio}</CardDescription>
+                <CardTitle className="text-xl font-bold text-gray-800 min-h-[3rem] flex items-center justify-center">
+                  <span className="line-clamp-2 text-center">{influencer.name}</span>
+                </CardTitle>
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                  <MapPin className="h-4 w-4" />
+                  <span>{influencer.city}</span>
+                </div>
               </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center text-gray-500">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {influencer.city}
-                  </div>
-                  <div className="flex items-center text-gray-500">
-                    <Instagram className="h-4 w-4 mr-1" />
-                    {influencer.instagram}
+
+              <CardContent className="flex-1 flex flex-col">
+                <div className="mb-4 flex-1">
+                  <p className="text-gray-600 text-sm line-clamp-3 min-h-[4.5rem]">
+                    {influencer.bio || "Опис профілю відсутній"}
+                  </p>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex flex-wrap gap-1 min-h-[2rem]">
+                    {influencer.categories.slice(0, 3).map((category: string, idx: number) => (
+                      <Badge
+                        key={idx}
+                        variant="secondary"
+                        className="text-xs bg-ua-pink-light text-ua-pink"
+                      >
+                        {category}
+                      </Badge>
+                    ))}
+                    {influencer.categories.length > 3 && (
+                      <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                        +{influencer.categories.length - 3}
+                      </Badge>
+                    )}
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm">
-                    <Users className="h-4 w-4 mr-1 text-ua-blue" />
-                    <span className="font-semibold">{influencer.followers.toLocaleString()}</span>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Instagram className="h-4 w-4 text-pink-500" />
+                      <span className="text-sm font-medium">
+                        {influencer.followers.toLocaleString()}
+                      </span>
+                    </div>
+                    {influencer.engagement && (
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-4 w-4 text-gray-400" />
+                        <span className="text-xs text-gray-500">{influencer.engagement}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center text-sm">
-                    <Eye className="h-4 w-4 mr-1 text-ua-pink" />
-                    <span className="font-semibold">{influencer.engagement}</span>
-                  </div>
+
+                  <Button
+                    onClick={() => {
+                      const token = localStorage.getItem('token');
+                      if (token) {
+                        window.location.href = `/messages/${influencer.id}`;
+                      } else {
+                        window.location.href = '/login';
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-ua-pink to-ua-blue hover:from-ua-pink-soft hover:to-ua-blue-soft text-white"
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Зв'язатися
+                  </Button>
                 </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {influencer.categories.map(category => (
-                    <Badge 
-                      key={category} 
-                      variant="secondary" 
-                      className="bg-ua-blue-light text-ua-blue text-xs"
-                    >
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <Button 
-                  className="w-full bg-gradient-to-r from-ua-pink to-ua-pink-soft hover:from-ua-pink-soft hover:to-ua-pink text-white"
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Зв'язатися
-                </Button>
               </CardContent>
             </Card>
           ))}

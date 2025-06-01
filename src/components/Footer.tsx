@@ -1,86 +1,129 @@
 import { Link } from 'react-router-dom';
-import { Users, Mail, Phone, MapPin, Instagram, Facebook, Linkedin } from 'lucide-react';
-import { Button, Badge, Separator } from '@/components/ui/base-ui';
+import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, Briefcase, Shield } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const Footer = () => {
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const updateRole = () => {
+      const userRole = localStorage.getItem('role');
+      console.log('Footer - role from localStorage:', userRole);
+      setRole(userRole);
+    };
+
+    updateRole();
+    window.addEventListener('authStateChanged', updateRole);
+    window.addEventListener('storage', updateRole);
+
+    return () => {
+      window.removeEventListener('authStateChanged', updateRole);
+      window.removeEventListener('storage', updateRole);
+    };
+  }, []);
+
+  console.log('Footer render - current role:', role);
+
   return (
-    <footer className="bg-gradient-to-r from-ua-blue to-ua-blue-soft text-white py-16 px-4">
-      <div className="container mx-auto">
+    <footer className="bg-gradient-to-r from-ua-blue to-ua-pink text-white">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-4 gap-8">
-          {/* Logo and Description */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                <Users className="h-5 w-5 text-ua-blue" />
-              </div>
-              <span className="text-xl font-bold">UA Influencer Connect</span>
-            </div>
-            <p className="text-ua-blue-light mb-6 max-w-md">
+          <div>
+            <h3 className="text-xl font-bold mb-4">UA Influencer Connect</h3>
+            <p className="text-blue-100 mb-4">
               Платформа, що об'єднує українських інфлюенсерів із брендами для створення 
               автентичного та ефективного контенту.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
+              <a href="https://www.instagram.com/sodd7m/" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
+              <a href="https://www.facebook.com/DwayneJohnson/" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
               <a href="#" className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors">
-                <Linkedin className="h-5 w-5" />
+                <Twitter className="h-5 w-5" />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Швидкі посилання</h3>
-            <ul className="space-y-2 text-ua-blue-light">
+            <h4 className="text-lg font-semibold mb-4">Навігація</h4>
+            <ul className="space-y-2">
+              <li><Link to="/" className="text-blue-100 hover:text-white transition-colors">Головна</Link></li>
+              <li><Link to="/catalog" className="text-blue-100 hover:text-white transition-colors">Каталог</Link></li>
+              <li><Link to="/how-it-works" className="text-blue-100 hover:text-white transition-colors">Як це працює</Link></li>
+              <li><Link to="/about" className="text-blue-100 hover:text-white transition-colors">Про нас</Link></li>
+              
+              {/* Показуємо кнопку "Біржа проектів" тільки для інфлюенсерів */}
+              {role === 'influencer' && (
+                <li>
+                  <Link 
+                    to="/project-board" 
+                    className="flex items-center gap-2 text-blue-100 hover:text-white transition-colors font-medium"
+                  >
+                    <Briefcase className="h-4 w-4" />
+                    Біржа проектів
+                  </Link>
+                </li>
+              )}
+              
+              {/* Показуємо посилання на адмінку тільки для адміністраторів */}
+              {(role === 'admin' || role === 'Admin') && (
+                <li>
+                  <Link 
+                    to="/admin" 
+                    className="flex items-center gap-2 text-blue-100 hover:text-white transition-colors font-medium"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Адмін панель
+                  </Link>
+                </li>
+              )}
+              
+              {/* Завжди показуємо для дебагу */}
               <li>
-                <Link to="/catalog" className="hover:text-white transition-colors">
-                  Каталог інфлюенсерів
-                </Link>
-              </li>
-              <li>
-                <Link to="/how-it-works" className="hover:text-white transition-colors">
-                  Як це працює
-                </Link>
-              </li>
-              <li>
-                <Link to="/pricing" className="hover:text-white transition-colors">
-                  Тарифи
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="hover:text-white transition-colors">
-                  Про нас
+                <Link 
+                  to="/admin" 
+                  className="flex items-center gap-2 text-yellow-300 hover:text-white transition-colors font-medium text-sm"
+                >
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Контакти</h3>
-            <ul className="space-y-3 text-ua-blue-light">
-              <li className="flex items-center">
-                <Mail className="h-4 w-4 mr-2" />
-                hello@uainfluencer.com
-              </li>
-              <li className="flex items-center">
-                <Phone className="h-4 w-4 mr-2" />
-                +380 (50) 123-45-67
-              </li>
-              <li className="flex items-center">
-                <MapPin className="h-4 w-4 mr-2" />
-                Київ, Україна
-              </li>
+            <h4 className="text-lg font-semibold mb-4">Для користувачів</h4>
+            <ul className="space-y-2">
+              <li><Link to="/register-influencer" className="text-blue-100 hover:text-white transition-colors">Стати інфлюенсером</Link></li>
+              <li><Link to="/register-brand" className="text-blue-100 hover:text-white transition-colors">Для брендів</Link></li>
+              <li><Link to="/login" className="text-blue-100 hover:text-white transition-colors">Увійти</Link></li>
             </ul>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Контакти</h4>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Mail className="h-4 w-4" />
+                <span className="text-blue-100">info@uainfluencer.com</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Phone className="h-4 w-4" />
+                <span className="text-blue-100">+380 (50) 123-45-67</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4" />
+                <span className="text-blue-100">Київ, Україна</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-white/20 mt-12 pt-8 text-center text-ua-blue-light">
-          <p>&copy; 2024 UA Influencer Connect. Всі права захищені.</p>
+        <div className="border-t border-white/20 mt-8 pt-8 text-center">
+          <p className="text-blue-100">
+            © 2024 UA Influencer Connect. Всі права захищені.
+          </p>
         </div>
       </div>
     </footer>
