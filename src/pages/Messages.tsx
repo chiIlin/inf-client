@@ -46,6 +46,7 @@ const Messages = () => {
   const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [loadingChats, setLoadingChats] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Завантаження чатів при монтуванні
   useEffect(() => {
@@ -58,10 +59,11 @@ const Messages = () => {
         });
         console.log('Чати з бекенду:', res.data);
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const currentUserId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        const userId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        setCurrentUserId(userId); // Зберігаємо userId у стані
         // Для кожного чату визначаємо співрозмовника
         const mapped = res.data.map((chat: any) => {
-          const otherId = chat.participants.find((id: string) => id !== currentUserId);
+          const otherId = chat.participants.find((id: string) => id !== userId);
           return {
             ...chat,
             id: chat.id || chat._id,
@@ -70,7 +72,7 @@ const Messages = () => {
             participantType: 'influencer',
             unreadCount: 0,
             isOnline: false,
-            lastMessageTime: chat.lastMessageTime ? new Date(chat.lastMessageTime) : undefined // <-- Додаємо це!
+            lastMessageTime: chat.lastMessageTime ? new Date(chat.lastMessageTime) : undefined
           };
         });
         setChats(mapped);
@@ -165,8 +167,6 @@ const Messages = () => {
 
   return (
     <div className="min-h-screen">
-      
-
       <section className="py-8 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="flex items-center justify-between mb-8">
@@ -299,31 +299,32 @@ const Messages = () => {
                   <CardContent className="p-0 flex flex-col h-[480px]">
                     <ScrollArea className="flex-1 p-4">
                       <div className="space-y-4">
-                        {chatMessages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${
-                              message.senderId === 'brand' ? 'justify-end' : 'justify-start'
-                            }`}
-                          >
+                        {chatMessages.map((message) => {
+                          const isMine = message.senderId === currentUserId;
+                          return (
                             <div
-                              className={`max-w-[70%] p-3 rounded-lg ${
-                                message.senderId === 'brand'
-                                  ? 'bg-gradient-to-r from-ua-pink to-ua-pink-soft text-white'
-                                  : 'bg-gray-100 text-gray-900'
-                              }`}
+                              key={message.id}
+                              className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
                             >
-                              <p className="text-sm">{message.text}</p>
-                              <p
-                                className={`text-xs mt-1 ${
-                                  message.senderId === 'brand' ? 'text-white/80' : 'text-gray-500'
+                              <div
+                                className={`max-w-[70%] p-3 rounded-lg ${
+                                  isMine
+                                    ? 'bg-gradient-to-r from-ua-pink to-ua-pink-soft text-white'
+                                    : 'bg-gray-100 text-gray-900'
                                 }`}
                               >
-                                {formatTime(message.timestamp)}
-                              </p>
+                                <p className="text-sm">{message.text}</p>
+                                <p
+                                  className={`text-xs mt-1 ${
+                                    isMine ? 'text-white/80' : 'text-gray-500'
+                                  }`}
+                                >
+                                  {formatTime(message.timestamp)}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </ScrollArea>
 
@@ -367,8 +368,6 @@ const Messages = () => {
           </div>
         </div>
       </section>
-
-     
     </div>
   );
 };
