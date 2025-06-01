@@ -13,7 +13,8 @@ import {
 } from '@/components/ui/base-ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Building2, Globe, Users, Upload } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Building2, Globe, Users, Upload, Plus, Calendar, DollarSign, MapPin, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
@@ -34,6 +35,19 @@ const BrandProfile = () => {
 
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [showProjectDialog, setShowProjectDialog] = useState(false);
+
+  // Стан для форми створення проєкту
+  const [projectForm, setProjectForm] = useState({
+    title: '',
+    description: '',
+    category: '',
+    budget: '',
+    location: '',
+    deadline: '',
+    followers: '',
+    requirements: ''
+  });
 
   const industries = [
     'Мода та одяг', 'Краса та косметика', 'Їжа та напої', 'Технології', 
@@ -46,6 +60,30 @@ const BrandProfile = () => {
     'Мала компанія (11-50 співробітників)', 
     'Середня компанія (51-200 співробітників)',
     'Велика компанія (200+ співробітників)'
+  ];
+
+  // Категорії для проєктів
+  const projectCategories = [
+    'beauty', 'fitness', 'tech', 'food', 'lifestyle', 'travel', 'fashion', 'education'
+  ];
+
+  const categoryLabels: Record<string, string> = {
+    beauty: 'Краса',
+    fitness: 'Фітнес', 
+    tech: 'Технології',
+    food: 'Їжа',
+    lifestyle: 'Лайфстайл',
+    travel: 'Подорожі',
+    fashion: 'Мода',
+    education: 'Освіта'
+  };
+
+  const budgetRanges = [
+    '1000-3000', '3000-5000', '5000-10000', '10000-20000', '20000+'
+  ];
+
+  const followerRanges = [
+    '1k-5k', '5k-10k', '10k-20k', '20k-50k', '50k+'
   ];
 
   useEffect(() => {
@@ -81,7 +119,6 @@ const BrandProfile = () => {
           targetAudience: profile.targetAudience || ''
         });
         
-        // ДОДАЙТЕ: завантаження логотипу
         if (profile.photoUrl) {
           setLogoPreview(`http://localhost:5112${profile.photoUrl}`);
         }
@@ -104,7 +141,10 @@ const BrandProfile = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // ДОДАЙТЕ функцію завантаження логотипу
+  const handleProjectInputChange = (field: string, value: string) => {
+    setProjectForm(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleUploadLogo = async (file: File) => {
     try {
       const token = localStorage.getItem('token');
@@ -143,18 +183,15 @@ const BrandProfile = () => {
     }
   };
 
-  // ОНОВІТЬ handleLogoChange
   const handleLogoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Попередній перегляд
       const reader = new FileReader();
       reader.onload = (e) => {
         setLogoPreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
       
-      // Завантаження на сервер
       await handleUploadLogo(file);
     }
   };
@@ -196,6 +233,72 @@ const BrandProfile = () => {
       toast({
         title: "Помилка",
         description: "Не вдалося оновити профіль",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCreateProject = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Помилка",
+          description: "Необхідно увійти в систему",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Валідація обов'язкових полів
+      if (!projectForm.title || !projectForm.description || !projectForm.category || !projectForm.budget) {
+        toast({
+          title: "Помилка",
+          description: "Заповніть всі обов'язкові поля",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Тут буде API виклик для створення кампанії
+      await axios.post('http://localhost:5112/api/campaigns', {
+        name: projectForm.title,
+        description: projectForm.description,
+        categoryId: projectForm.category, // Потрібно буде отримати ID категорії
+        budget: projectForm.budget,
+        location: projectForm.location,
+        deadline: projectForm.deadline ? new Date(projectForm.deadline).toISOString() : null,
+        requirements: projectForm.requirements.split(',').map(req => req.trim()).filter(req => req),
+        minFollowers: projectForm.followers
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      toast({
+        title: "Проєкт створено!",
+        description: "Ваше оголошення успішно розміщено на біржі проєктів.",
+      });
+
+      // Очищаємо форму та закриваємо діалог
+      setProjectForm({
+        title: '',
+        description: '',
+        category: '',
+        budget: '',
+        location: '',
+        deadline: '',
+        followers: '',
+        requirements: ''
+      });
+      setShowProjectDialog(false);
+
+    } catch (error) {
+      console.error('Error creating project:', error);
+      toast({
+        title: "Помилка",
+        description: "Не вдалося створити проєкт",
         variant: "destructive"
       });
     }
@@ -409,15 +512,155 @@ const BrandProfile = () => {
                     Зберегти зміни
                   </Button>
                   
-                  <Button 
-                    variant="outline"
-                    asChild
-                    className="border-ua-pink text-ua-pink hover:bg-ua-pink hover:text-white"
-                  >
-                    <Link to="/catalog">
-                      Переглянути каталог
-                    </Link>
-                  </Button>
+                  <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline"
+                        className="border-ua-pink text-ua-pink hover:bg-ua-pink hover:text-white"
+                      >
+                        <Plus className="h-5 w-5 mr-2" />
+                        Виставити оголошення
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Створити нове оголошення</DialogTitle>
+                        <DialogDescription>
+                          Заповніть форму, щоб розмістити ваш проєкт на біржі
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="space-y-6 py-4">
+                        <div>
+                          <Label htmlFor="project-title">Назва проєкту *</Label>
+                          <Input 
+                            id="project-title"
+                            value={projectForm.title}
+                            onChange={(e) => handleProjectInputChange('title', e.target.value)}
+                            placeholder="Наприклад: Промо нової лінії косметики"
+                            className="border-ua-blue-light focus:border-ua-pink"
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="project-description">Опис проєкту *</Label>
+                          <Textarea 
+                            id="project-description"
+                            value={projectForm.description}
+                            onChange={(e) => handleProjectInputChange('description', e.target.value)}
+                            placeholder="Детально опишіть що потрібно зробити, які вимоги до контенту..."
+                            className="border-ua-blue-light focus:border-ua-pink min-h-[120px]"
+                          />
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="project-category">Категорія *</Label>
+                            <Select value={projectForm.category} onValueChange={(value) => handleProjectInputChange('category', value)}>
+                              <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
+                                <SelectValue placeholder="Оберіть категорію" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {projectCategories.map(category => (
+                                  <SelectItem key={category} value={category}>
+                                    {categoryLabels[category]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="project-budget">Бюджет (грн) *</Label>
+                            <Select value={projectForm.budget} onValueChange={(value) => handleProjectInputChange('budget', value)}>
+                              <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
+                                <SelectValue placeholder="Оберіть бюджет" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {budgetRanges.map(budget => (
+                                  <SelectItem key={budget} value={budget}>
+                                    {budget} грн
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="project-location">Локація</Label>
+                            <div className="relative">
+                              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                              <Input 
+                                id="project-location"
+                                value={projectForm.location}
+                                onChange={(e) => handleProjectInputChange('location', e.target.value)}
+                                placeholder="Київ / Онлайн"
+                                className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="project-deadline">Дедлайн</Label>
+                            <div className="relative">
+                              <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                              <Input 
+                                id="project-deadline"
+                                type="date"
+                                value={projectForm.deadline}
+                                onChange={(e) => handleProjectInputChange('deadline', e.target.value)}
+                                className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="project-followers">Мінімальна кількість підписників</Label>
+                          <Select value={projectForm.followers} onValueChange={(value) => handleProjectInputChange('followers', value)}>
+                            <SelectTrigger className="border-ua-blue-light focus:border-ua-pink">
+                              <SelectValue placeholder="Оберіть діапазон" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {followerRanges.map(range => (
+                                <SelectItem key={range} value={range}>
+                                  {range}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="project-requirements">Додаткові вимоги</Label>
+                          <Textarea 
+                            id="project-requirements"
+                            value={projectForm.requirements}
+                            onChange={(e) => handleProjectInputChange('requirements', e.target.value)}
+                            placeholder="Перелічіть через кому: досвід роботи з брендами, тип контенту, інше..."
+                            className="border-ua-blue-light focus:border-ua-pink"
+                          />
+                        </div>
+
+                        <div className="flex gap-4 pt-4">
+                          <Button 
+                            onClick={handleCreateProject}
+                            className="flex-1 bg-gradient-to-r from-ua-pink to-ua-pink-soft hover:from-ua-pink-soft hover:to-ua-pink text-white"
+                          >
+                            <Target className="h-4 w-4 mr-2" />
+                            Створити оголошення
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => setShowProjectDialog(false)}
+                            className="border-gray-300"
+                          >
+                            Скасувати
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardContent>
             </Card>
