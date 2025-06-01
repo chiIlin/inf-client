@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, Briefcase } from 'lucide-react';
+import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, Briefcase, Shield } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const Footer = () => {
@@ -8,16 +8,21 @@ const Footer = () => {
   useEffect(() => {
     const updateRole = () => {
       const userRole = localStorage.getItem('role');
+      console.log('Footer - role from localStorage:', userRole);
       setRole(userRole);
     };
 
     updateRole();
     window.addEventListener('authStateChanged', updateRole);
+    window.addEventListener('storage', updateRole);
 
     return () => {
       window.removeEventListener('authStateChanged', updateRole);
+      window.removeEventListener('storage', updateRole);
     };
   }, []);
+
+  console.log('Footer render - current role:', role);
 
   return (
     <footer className="bg-gradient-to-r from-ua-blue to-ua-pink text-white">
@@ -49,6 +54,7 @@ const Footer = () => {
               <li><Link to="/catalog" className="text-blue-100 hover:text-white transition-colors">Каталог</Link></li>
               <li><Link to="/how-it-works" className="text-blue-100 hover:text-white transition-colors">Як це працює</Link></li>
               <li><Link to="/about" className="text-blue-100 hover:text-white transition-colors">Про нас</Link></li>
+              
               {/* Показуємо кнопку "Біржа проектів" тільки для інфлюенсерів */}
               {role === 'influencer' && (
                 <li>
@@ -61,6 +67,28 @@ const Footer = () => {
                   </Link>
                 </li>
               )}
+              
+              {/* Показуємо посилання на адмінку тільки для адміністраторів */}
+              {(role === 'admin' || role === 'Admin') && (
+                <li>
+                  <Link 
+                    to="/admin" 
+                    className="flex items-center gap-2 text-blue-100 hover:text-white transition-colors font-medium"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Адмін панель
+                  </Link>
+                </li>
+              )}
+              
+              {/* Завжди показуємо для дебагу */}
+              <li>
+                <Link 
+                  to="/admin" 
+                  className="flex items-center gap-2 text-yellow-300 hover:text-white transition-colors font-medium text-sm"
+                >
+                </Link>
+              </li>
             </ul>
           </div>
 

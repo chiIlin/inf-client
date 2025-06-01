@@ -50,6 +50,9 @@ const Header = () => {
   // Функція для оновлення стану аутентифікації
   const updateAuthState = () => {
     const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("role");
+    console.log('Header - updateAuthState:', { token: !!token, role: userRole }); // Додаємо дебаг
+    
     if (token) {
       validateToken();
     } else {
