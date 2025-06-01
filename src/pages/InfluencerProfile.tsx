@@ -63,6 +63,12 @@ const InfluencerProfile = () => {
     setFormData(prev => ({ ...prev, [field]: formattedValue }));
   };
 
+  // Функція для конвертації форматованого числа назад в число
+  const parseFollowersNumber = (value: string) => {
+    if (!value) return null;
+    return parseInt(value.replace(/\s/g, ''), 10) || null;
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -94,11 +100,11 @@ const InfluencerProfile = () => {
           youtube: profile.youtubeHandle || '',
           tiktok: profile.tiktokHandle || '',
           telegram: profile.telegramHandle || '',
-          // Додаємо завантаження підписників (поки що пусто, оскільки немає в бекенді)
-          instagramFollowers: '',
-          youtubeFollowers: '',
-          tiktokFollowers: '',
-          telegramFollowers: ''
+          // ОНОВЛЮЄМО: завантажуємо підписників з бекенду
+          instagramFollowers: profile.instagramFollowers ? profile.instagramFollowers.toLocaleString('uk-UA') : '',
+          youtubeFollowers: profile.youtubeFollowers ? profile.youtubeFollowers.toLocaleString('uk-UA') : '',
+          tiktokFollowers: profile.tiktokFollowers ? profile.tiktokFollowers.toLocaleString('uk-UA') : '',
+          telegramFollowers: profile.telegramFollowers ? profile.telegramFollowers.toLocaleString('uk-UA') : ''
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -151,8 +157,12 @@ const InfluencerProfile = () => {
         instagramHandle: formData.instagram,
         youtubeHandle: formData.youtube,
         tiktokHandle: formData.tiktok,
-        telegramHandle: formData.telegram
-        // Поки не відправляємо підписників на бекенд
+        telegramHandle: formData.telegram,
+        // ДОДАЄМО: відправляємо підписників на бекенд
+        instagramFollowers: parseFollowersNumber(formData.instagramFollowers),
+        youtubeFollowers: parseFollowersNumber(formData.youtubeFollowers),
+        tiktokFollowers: parseFollowersNumber(formData.tiktokFollowers),
+        telegramFollowers: parseFollowersNumber(formData.telegramFollowers)
       }, {
         headers: {
           Authorization: `Bearer ${token}`
