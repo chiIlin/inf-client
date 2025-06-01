@@ -29,7 +29,12 @@ const InfluencerProfile = () => {
     instagram: '',
     youtube: '',
     tiktok: '',
-    telegram: ''
+    telegram: '',
+    // Додаємо поля для кількості підписників
+    instagramFollowers: '',
+    youtubeFollowers: '',
+    tiktokFollowers: '',
+    telegramFollowers: ''
   });
 
   const [avatarPreview, setAvatarPreview] = useState<string>('');
@@ -44,6 +49,19 @@ const InfluencerProfile = () => {
     'Київ', 'Львів', 'Одеса', 'Харків', 'Дніпро', 'Запоріжжя', 
     'Вінниця', 'Полтава', 'Чернігів', 'Черкаси', 'Інше'
   ];
+
+  // Функція для форматування числа підписників
+  const formatFollowersNumber = (value: string) => {
+    const numValue = value.replace(/\D/g, ''); // Видаляємо все окрім цифр
+    if (numValue === '') return '';
+    return Number(numValue).toLocaleString('uk-UA'); // Форматуємо з пробілами
+  };
+
+  // Функція для обробки введення підписників
+  const handleFollowersChange = (field: string, value: string) => {
+    const formattedValue = formatFollowersNumber(value);
+    setFormData(prev => ({ ...prev, [field]: formattedValue }));
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -75,7 +93,12 @@ const InfluencerProfile = () => {
           instagram: profile.instagramHandle || '',
           youtube: profile.youtubeHandle || '',
           tiktok: profile.tiktokHandle || '',
-          telegram: profile.telegramHandle || ''
+          telegram: profile.telegramHandle || '',
+          // Додаємо завантаження підписників (поки що пусто, оскільки немає в бекенді)
+          instagramFollowers: '',
+          youtubeFollowers: '',
+          tiktokFollowers: '',
+          telegramFollowers: ''
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -129,6 +152,7 @@ const InfluencerProfile = () => {
         youtubeHandle: formData.youtube,
         tiktokHandle: formData.tiktok,
         telegramHandle: formData.telegram
+        // Поки не відправляємо підписників на бекенд
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -290,60 +314,129 @@ const InfluencerProfile = () => {
                   </Select>
                 </div>
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Соціальні мережі</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="instagram">Instagram *</Label>
-                      <div className="relative">
-                        <Instagram className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <h3 className="text-lg font-semibold">Соціальні мережі та аудиторія</h3>
+                  
+                  {/* Instagram */}
+                  <div className="border border-ua-pink-light rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Instagram className="h-5 w-5 text-pink-500" />
+                      <span className="font-medium">Instagram</span>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="instagram">Нікнейм *</Label>
                         <Input 
                           id="instagram"
                           value={formData.instagram}
                           onChange={(e) => handleInputChange('instagram', e.target.value)}
-                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                          placeholder="@your_instagram"
+                          className="border-ua-blue-light focus:border-ua-pink"
                         />
                       </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="youtube">YouTube</Label>
-                      <div className="relative">
-                        <Youtube className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <div>
+                        <Label htmlFor="instagram-followers">Кількість підписників</Label>
                         <Input 
-                          id="youtube"
-                          value={formData.youtube}
-                          onChange={(e) => handleInputChange('youtube', e.target.value)}
-                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                          id="instagram-followers"
+                          value={formData.instagramFollowers}
+                          onChange={(e) => handleFollowersChange('instagramFollowers', e.target.value)}
+                          placeholder="10 000"
+                          className="border-ua-blue-light focus:border-ua-pink"
                         />
                       </div>
                     </div>
                   </div>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="tiktok">TikTok</Label>
-                      <div className="relative">
-                        <Camera className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+
+                  {/* YouTube */}
+                  <div className="border border-red-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Youtube className="h-5 w-5 text-red-500" />
+                      <span className="font-medium">YouTube</span>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="youtube">Нікнейм</Label>
+                        <Input 
+                          id="youtube"
+                          value={formData.youtube}
+                          onChange={(e) => handleInputChange('youtube', e.target.value)}
+                          placeholder="@your_youtube"
+                          className="border-ua-blue-light focus:border-ua-pink"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="youtube-followers">Кількість підписників</Label>
+                        <Input 
+                          id="youtube-followers"
+                          value={formData.youtubeFollowers}
+                          onChange={(e) => handleFollowersChange('youtubeFollowers', e.target.value)}
+                          placeholder="5 000"
+                          className="border-ua-blue-light focus:border-ua-pink"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* TikTok */}
+                  <div className="border border-gray-300 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Camera className="h-5 w-5 text-gray-700" />
+                      <span className="font-medium">TikTok</span>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="tiktok">Нікнейм</Label>
                         <Input 
                           id="tiktok"
                           value={formData.tiktok}
                           onChange={(e) => handleInputChange('tiktok', e.target.value)}
-                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                          placeholder="@your_tiktok"
+                          className="border-ua-blue-light focus:border-ua-pink"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="tiktok-followers">Кількість підписників</Label>
+                        <Input 
+                          id="tiktok-followers"
+                          value={formData.tiktokFollowers}
+                          onChange={(e) => handleFollowersChange('tiktokFollowers', e.target.value)}
+                          placeholder="15 000"
+                          className="border-ua-blue-light focus:border-ua-pink"
                         />
                       </div>
                     </div>
-                    <div>
-                      <Label htmlFor="telegram">Telegram канал</Label>
-                      <div className="relative">
-                        <MessageCircle className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  </div>
+
+                  {/* Telegram */}
+                  <div className="border border-blue-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MessageCircle className="h-5 w-5 text-blue-500" />
+                      <span className="font-medium">Telegram канал</span>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="telegram">Нікнейм каналу</Label>
                         <Input 
                           id="telegram"
                           value={formData.telegram}
                           onChange={(e) => handleInputChange('telegram', e.target.value)}
-                          className="pl-10 border-ua-blue-light focus:border-ua-pink"
+                          placeholder="@your_telegram"
+                          className="border-ua-blue-light focus:border-ua-pink"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="telegram-followers">Кількість підписників</Label>
+                        <Input 
+                          id="telegram-followers"
+                          value={formData.telegramFollowers}
+                          onChange={(e) => handleFollowersChange('telegramFollowers', e.target.value)}
+                          placeholder="2 000"
+                          className="border-ua-blue-light focus:border-ua-pink"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
+
                 <div className="flex gap-4 pt-6">
                   <Button 
                     onClick={handleSave}
