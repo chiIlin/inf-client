@@ -108,25 +108,19 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/catalog"
-              className="text-gray-700 hover:text-ua-pink transition-colors"
-            >
+            <Link to="/catalog" className="text-gray-700 hover:text-ua-pink transition-colors">
               Каталог
             </Link>
-            <Link
-              to="/how-it-works"
-              className="text-gray-700 hover:text-ua-pink transition-colors"
-            >
+            <Link to="/how-it-works" className="text-gray-700 hover:text-ua-pink transition-colors">
               Як це працює
             </Link>
-            {/* ОНОВЛЮЄМО: показуємо адмінку тільки для ролі admin */}
-            {isLoggedIn && role === "admin" && (
-              <Link
-                to="/admin"
-                className="text-red-600 hover:text-red-700 transition-colors font-semibold"
+            {/* Додаємо кнопку "Біржа проектів" для інфлюенсерів */}
+            {role === 'influencer' && (
+              <Link 
+                to="/project-board" 
+                className="text-gray-700 hover:text-ua-pink transition-colors font-medium"
               >
-                Адмінка
+                Біржа проектів
               </Link>
             )}
           </nav>
@@ -185,68 +179,39 @@ const Header = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-ua-pink-light pt-4">
-            <nav className="flex flex-col space-y-3">
-              <Link
-                to="/catalog"
-                className="text-gray-700 hover:text-ua-pink transition-colors py-2"
+            {/* Mobile menu */}
+            <nav className="space-y-4">
+              <Link 
+                to="/" 
+                className="block text-gray-700 hover:text-ua-pink transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Головна
+              </Link>
+              <Link 
+                to="/catalog" 
+                className="block text-gray-700 hover:text-ua-pink transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Каталог
               </Link>
-              <Link
-                to="/how-it-works"
-                className="text-gray-700 hover:text-ua-pink transition-colors py-2"
+              <Link 
+                to="/how-it-works" 
+                className="block text-gray-700 hover:text-ua-pink transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Як це працює
               </Link>
-              {/* ОНОВЛЮЄМО: мобільна версія адмінки */}
-              {isLoggedIn && role === "admin" && (
-                <Link
-                  to="/admin"
-                  className="text-red-600 hover:text-red-700 transition-colors font-semibold py-2"
+              {/* Додаємо кнопку "Біржа проектів" для інфлюенсерів у мобільному меню */}
+              {role === 'influencer' && (
+                <Link 
+                  to="/project-board" 
+                  className="block text-gray-700 hover:text-ua-pink transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  Адмінка
+                  Біржа проектів
                 </Link>
               )}
-              <div className="flex flex-col space-y-2 pt-3 border-t border-ua-pink-light">
-                {isLoggedIn ? (
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={handleLogout}
-                      className="bg-ua-blue text-white px-4 py-2 rounded hover:bg-ua-blue-soft transition"
-                    >
-                      Вийти
-                    </button>
-                    {/* ОНОВЛЮЄМО: мобільна версія профілю */}
-                    {role !== "admin" && (
-                      <Link to={role === "company" ? "/brand-profile" : "/influencer-profile"}>
-                        <button className="bg-ua-pink text-white px-4 py-2 rounded hover:bg-ua-pink-soft transition w-full">
-                          Профіль
-                        </button>
-                      </Link>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <Link to="/login">
-                      <Button variant="ghost" className="w-full text-ua-blue hover:text-ua-pink">
-                        Увійти
-                      </Button>
-                    </Link>
-                    <Link to="/register-influencer">
-                      <Button className="w-full bg-gradient-to-r from-ua-pink to-ua-pink-soft hover:from-ua-pink-soft hover:to-ua-pink text-white">
-                        <Users className="h-4 w-4 mr-2" />
-                        Інфлюенсер
-                      </Button>
-                    </Link>
-                    <Link to="/register-brand">
-                      <Button className="w-full bg-gradient-to-r from-ua-blue to-ua-blue-soft hover:from-ua-blue-soft hover:to-ua-blue text-white">
-                        <Building2 className="h-4 w-4 mr-2" />
-                        Бренд
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </div>
             </nav>
           </div>
         )}

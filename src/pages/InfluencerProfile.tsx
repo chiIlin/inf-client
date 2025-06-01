@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Button,
   Input,
@@ -13,13 +13,25 @@ import {
 } from '@/components/ui/base-ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 // ДОДАЙТЕ ЦІ ІМПОРТИ:
-import { Users, Camera, Instagram, Youtube, Upload, MessageCircle } from 'lucide-react';
+import { Users, Camera, Instagram, Youtube, Upload, MessageCircle, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
 const InfluencerProfile = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [showGoLiveDialog, setShowGoLiveDialog] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -245,6 +257,42 @@ const InfluencerProfile = () => {
     }
   };
 
+  const handleGoLive = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Помилка",
+          description: "Необхідно увійти в систему",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Тут можна додати API виклик для оновлення статусу "активний на біржі"
+      await axios.put('http://localhost:5112/api/profile/influencer/go-live', {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      toast({
+        title: "Вітаємо!",
+        description: "Ви успішно з'явилися на біржі інфлюенсерів!",
+      });
+
+      // Перенаправляємо до каталогу
+      navigate('/catalog');
+    } catch (error) {
+      console.error('Error going live:', error);
+      toast({
+        title: "Помилка",
+        description: "Не вдалося з'явитися на біржі",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (loading) {
     return (
       <section className="py-16 px-4">
@@ -269,6 +317,7 @@ const InfluencerProfile = () => {
             Керуйте своїм профілем та налаштуваннями
           </p>
         </div>
+        
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Avatar Section */}
           <div className="lg:col-span-1">
@@ -519,18 +568,40 @@ const InfluencerProfile = () => {
                   </Button>
                   <Button 
                     variant="outline"
-                    asChild
+                    onClick={() => setShowGoLiveDialog(true)}
                     className="border-ua-blue text-ua-blue hover:bg-ua-blue hover:text-white"
                   >
-                    <Link to="/catalog">
-                      Переглянути каталог
-                    </Link>
+                    <Star className="h-5 w-5 mr-2" />
+                    Вийти на біржу
                   </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
+
+        {/* Dialog для підтвердження виходу на біржу */}
+        <AlertDialog open={showGoLiveDialog} onOpenChange={setShowGoLiveDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Вийти на біржу інфлюенсерів?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Ви впевнені, що хочете з'явитися в каталозі інфлюенсерів? 
+                Після цього ваш профіль стане видимим для брендів, і вони зможуть 
+                зв'язатися з вами для співпраці.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Скасувати</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleGoLive}
+                className="bg-gradient-to-r from-ua-pink to-ua-pink-soft hover:from-ua-pink-soft hover:to-ua-pink text-white"
+              >
+                Так, вийти на біржу
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </section>
   );

@@ -18,6 +18,7 @@ import InfluencerProfile from "@/pages/InfluencerProfile";
 import BrandProfile from "@/pages/BrandProfile";
 import Messages from "./pages/Messages";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProjectBoard from "./pages/ProjectBoard";
 import { useEffect } from "react";
 import axios from "axios";
 
@@ -101,6 +102,7 @@ const App = () => {
             <Route path="/influencer-profile" element={<InfluencerProfile />} />
             <Route path="/brand-profile" element={<BrandProfile />} />
             <Route path="/messages/:userId" element={<Messages />} />
+            <Route path="/project-board" element={<ProjectBoard />} />
 
             {/* ОНОВЛЮЄМО: захищаємо адмін маршрут */}
             <Route
