@@ -127,65 +127,82 @@ const InfluencerCatalog = () => {
         {/* Results */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredInfluencers.map(influencer => (
-            <Card key={influencer.id} className="bg-white/80 backdrop-blur-sm border-ua-pink-light transition-all duration-300 hover:shadow-lg hover:-translate-y-1 will-change-transform">
-              <CardHeader className="text-center">
-                <div className="w-20 h-20 rounded-full mx-auto mb-4 overflow-hidden bg-gradient-to-r from-ua-pink to-ua-blue p-0.5">
-                  <div className="w-full h-full rounded-full overflow-hidden bg-white">
-                    <img 
-                      src={influencer.avatar} 
-                      alt={influencer.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+            <Card key={influencer.id} className="bg-white/80 backdrop-blur-sm border-ua-pink-light transition-all duration-300 hover:shadow-lg hover:-translate-y-1 will-change-transform flex flex-col h-full">
+              <CardHeader className="text-center pb-4">
+                <div className="relative mx-auto mb-4">
+                  <img
+                    src={influencer.avatar}
+                    alt={influencer.name}
+                    className="w-20 h-20 rounded-full object-cover border-4 border-ua-pink-light"
+                  />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
-                <CardTitle className="text-xl font-semibold">{influencer.name}</CardTitle>
-                <CardDescription className="text-gray-600">{influencer.bio}</CardDescription>
+                <CardTitle className="text-xl font-bold text-gray-800 min-h-[3rem] flex items-center justify-center">
+                  <span className="line-clamp-2 text-center">{influencer.name}</span>
+                </CardTitle>
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                  <MapPin className="h-4 w-4" />
+                  <span>{influencer.city}</span>
+                </div>
               </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center text-gray-500 min-w-0">
-                    <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">{influencer.city}</span>
-                  </div>
-                  <div className="flex items-center text-gray-500 min-w-0">
-                    <Instagram className="h-4 w-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">{influencer.instagram}</span>
+
+              <CardContent className="flex-1 flex flex-col">
+                <div className="mb-4 flex-1">
+                  <p className="text-gray-600 text-sm line-clamp-3 min-h-[4.5rem]">
+                    {influencer.bio || "Опис профілю відсутній"}
+                  </p>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex flex-wrap gap-1 min-h-[2rem]">
+                    {influencer.categories.slice(0, 3).map((category: string, idx: number) => (
+                      <Badge
+                        key={idx}
+                        variant="secondary"
+                        className="text-xs bg-ua-pink-light text-ua-pink"
+                      >
+                        {category}
+                      </Badge>
+                    ))}
+                    {influencer.categories.length > 3 && (
+                      <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                        +{influencer.categories.length - 3}
+                      </Badge>
+                    )}
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm">
-                    <Users className="h-4 w-4 mr-1 text-ua-blue flex-shrink-0" />
-                    <span className="font-semibold">{influencer.followers.toLocaleString()}</span>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Instagram className="h-4 w-4 text-pink-500" />
+                      <span className="text-sm font-medium">
+                        {influencer.followers.toLocaleString()}
+                      </span>
+                    </div>
+                    {influencer.engagement && (
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-4 w-4 text-gray-400" />
+                        <span className="text-xs text-gray-500">{influencer.engagement}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center text-sm">
-                    <Eye className="h-4 w-4 mr-1 text-ua-pink flex-shrink-0" />
-                    <span className="font-semibold">{influencer.engagement}</span>
-                  </div>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {influencer.categories.map(category => (
-                    <Badge 
-                      key={category} 
-                      variant="secondary" 
-                      className="bg-ua-blue-light text-ua-blue text-xs"
-                    >
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <Button 
-                  asChild
-                  className="w-full bg-gradient-to-r from-ua-pink to-ua-pink-soft hover:from-ua-pink-soft hover:to-ua-pink text-white"
-                >
-                  <Link to={`/messages/${influencer.id}`}>
+
+                  <Button
+                    onClick={() => {
+                      const token = localStorage.getItem('token');
+                      if (token) {
+                        window.location.href = `/messages/${influencer.id}`;
+                      } else {
+                        window.location.href = '/login';
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-ua-pink to-ua-blue hover:from-ua-pink-soft hover:to-ua-blue-soft text-white"
+                  >
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Зв'язатися
-                  </Link>
-                </Button>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}

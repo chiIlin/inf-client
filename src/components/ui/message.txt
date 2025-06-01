@@ -1,0 +1,77 @@
+oot@ubuntu-s-2vcpu-4gb-ams3-01:~/bestvinnytsa/bestvinnytsa# docker exec bestvinnytsa-frontend wget -O- http://backend:5112/api/health
+Error response from daemon: Container 6d9410ee6cd08429c0e0fa8210366dd05ed7224240779294380b99a1949ec497 is restarting, wait until the container is running
+root@ubuntu-s-2vcpu-4gb-ams3-01:~/bestvinnytsa/bestvinnytsa# docker logs bestvinnytsa-backend
+warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+      Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed. For more information go to https://aka.ms/aspnet/dataprotectionwarning
+warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+      No XML encryptor configured. Key {e8ff1a50-ae8b-44d3-9050-27a073d40000} may be persisted to storage in unencrypted form.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://[::]:8080
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /app
+root@ubuntu-s-2vcpu-4gb-ams3-01:~/bestvinnytsa/bestvinnytsa# docker ps -a
+CONTAINER ID   IMAGE                   COMMAND                  CREATED             STATUS                          PORTS                                           NAMES
+6d9410ee6cd0   bestvinnytsa_frontend   "/docker-entrypoint.…"   4 minutes ago       Restarting (1) 15 seconds ago                                                   bestvinnytsa-frontend
+9be0d28cd441   bestvinnytsa_backend    "dotnet bestvinnytsa…"   4 minutes ago       Up 4 minutes                    0.0.0.0:5112->5112/tcp, :::5112->5112/tcp       bestvinnytsa-backend
+46006cf10185   mongo:6                 "docker-entrypoint.s…"   4 minutes ago       Up 4 minutes                    0.0.0.0:27017->27017/tcp, :::27017->27017/tcp   mongodb
+c48056b6a02b   a1986431f975            "/bin/sh -c 'chmod +…"   About an hour ago   Exited (1) About an hour ago                                                    agitated_cray
+root@ubuntu-s-2vcpu-4gb-ams3-01:~/bestvinnytsa/bestvinnytsa# docker exec -it bestvinnytsa-backend ls -la /app
+total 15328
+drwxr-xr-x 1 root root    4096 Jun  1 05:22 .
+drwxr-xr-x 1 root root    4096 Jun  1 05:47 ..
+-rwxr--r-- 1 root root 1685152 Nov  9  2022 AWSSDK.Core.dll
+-rwxr--r-- 1 root root   86176 Nov  9  2022 AWSSDK.SecurityToken.dll
+-rwxr--r-- 1 root root   76800 Jan 24  2019 AspNetCore.Identity.Mongo.dll
+-rwxr--r-- 1 root root   23040 Mar  3  2022 BCrypt.Net-Next.dll
+-rwxr--r-- 1 root root  154112 Jun 10  2022 DnsClient.dll
+-rwxr--r-- 1 root root   51984 Apr 17 04:13 Microsoft.AspNetCore.Authentication.JwtBearer.dll
+-rwxr--r-- 1 root root   53032 Apr 17 04:08 Microsoft.AspNetCore.Cryptography.Internal.dll
+-rwxr--r-- 1 root root   23848 Apr 17 04:09 Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+-rwxr--r-- 1 root root  108816 Apr 17 04:09 Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+-rwxr--r-- 1 root root   65696 Nov  1  2023 Microsoft.AspNetCore.OpenApi.dll
+-rwxr--r-- 1 root root   34848 Apr 17 01:15 Microsoft.EntityFrameworkCore.Abstractions.dll
+-rwxr--r-- 1 root root 1994296 Apr 17 01:16 Microsoft.EntityFrameworkCore.Relational.dll
+-rwxr--r-- 1 root root 2534944 Apr 17 01:15 Microsoft.EntityFrameworkCore.dll
+-rwxr--r-- 1 root root   45832 Sep 16  2024 Microsoft.Extensions.Caching.Memory.dll
+-rwxr--r-- 1 root root   63768 Sep 16  2024 Microsoft.Extensions.DependencyInjection.Abstractions.dll
+-rwxr--r-- 1 root root   92952 Sep 16  2024 Microsoft.Extensions.DependencyInjection.dll
+-rwxr--r-- 1 root root  177936 Apr 17 04:09 Microsoft.Extensions.Identity.Core.dll
+-rwxr--r-- 1 root root   45352 Apr 17 04:09 Microsoft.Extensions.Identity.Stores.dll
+-rwxr--r-- 1 root root   65320 Sep 16  2024 Microsoft.Extensions.Logging.Abstractions.dll
+-rwxr--r-- 1 root root   50976 Sep 16  2024 Microsoft.Extensions.Logging.dll
+-rwxr--r-- 1 root root   64776 Jan 18  2024 Microsoft.Extensions.Options.dll
+-rwxr--r-- 1 root root   19376 Nov 21  2023 Microsoft.IdentityModel.Abstractions.dll
+-rwxr--r-- 1 root root  127520 Nov 21  2023 Microsoft.IdentityModel.JsonWebTokens.dll
+-rwxr--r-- 1 root root   36896 Nov 21  2023 Microsoft.IdentityModel.Logging.dll
+-rwxr--r-- 1 root root  120240 Nov 21  2023 Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+-rwxr--r-- 1 root root   40376 Nov 21  2023 Microsoft.IdentityModel.Protocols.dll
+-rwxr--r-- 1 root root  285728 Nov 21  2023 Microsoft.IdentityModel.Tokens.dll
+-rwxr--r-- 1 root root  243784 Dec 20 16:11 Microsoft.OpenApi.dll
+-rwxr--r-- 1 root root  520704 Jun 12  2024 MongoDB.Bson.dll
+-rwxr--r-- 1 root root 1024000 Jun 12  2024 MongoDB.Driver.Core.dll
+-rwxr--r-- 1 root root 1588224 Jun 12  2024 MongoDB.Driver.dll
+-rwxr--r-- 1 root root   59392 May 23  2024 MongoDB.Libmongocrypt.dll
+-rwxr--r-- 1 root root  546304 Nov 22  2021 SharpCompress.dll
+-rwxr--r-- 1 root root   40448 Jan 23  2021 Snappier.dll
+-rwxr--r-- 1 root root   17920 May 21 16:37 Swashbuckle.AspNetCore.Swagger.dll
+-rwxr--r-- 1 root root  156672 May 21 16:37 Swashbuckle.AspNetCore.SwaggerGen.dll
+-rwxr--r-- 1 root root 2324480 May 21 16:37 Swashbuckle.AspNetCore.SwaggerUI.dll
+-rwxr--r-- 1 root root   82352 Nov 21  2023 System.IdentityModel.Tokens.Jwt.dll
+-rwxr--r-- 1 root root   96400 May 15  2018 System.Security.Permissions.dll
+-rwxr--r-- 1 root root  406016 Oct 18  2023 ZstdSharp.dll
+-rw-r--r-- 1 root root     145 Jun  1 03:39 appsettings.Development.json
+-rw-r--r-- 1 root root     520 Jun  1 03:39 appsettings.json
+-rwxr-xr-x 1 root root   72520 Jun  1 05:22 bestvinnytsa.web
+-rw-r--r-- 1 root root   60118 Jun  1 05:22 bestvinnytsa.web.deps.json
+-rw-r--r-- 1 root root  132608 Jun  1 05:22 bestvinnytsa.web.dll
+-rw-r--r-- 1 root root   53920 Jun  1 05:22 bestvinnytsa.web.pdb
+-rw-r--r-- 1 root root     537 Jun  1 05:22 bestvinnytsa.web.runtimeconfig.json
+-rw-r--r-- 1 root root   14227 Jun  1 05:22 bestvinnytsa.web.xml
+drwxr-xr-x 5 root root    4096 Jun  1 05:22 runtimes
+-rw-r--r-- 1 root root     492 Jun  1 05:22 web.config
+drwxr-xr-x 1 root root    4096 Jun  1 05:47 wwwroot
+root@ubuntu-s-2vcpu-4gb-ams3-01:~/bestvinnytsa/bestvinnytsa# 
